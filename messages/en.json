@@ -1,0 +1,325 @@
+{
+  "common": {
+    "appName": "Gold AI",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "save": "Save",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "close": "Close",
+    "viewAll": "View All",
+    "learnMore": "Learn More",
+    "startDesigning": "Start Designing"
+  },
+  "nav": {
+    "home": "Home",
+    "design": "Design",
+    "about": "About",
+    "contact": "Contact",
+    "account": "Account",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "cart": "Cart",
+    "myDesigns": "My Designs",
+    "orders": "Orders",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "language": "Language"
+  },
+  "home": {
+    "hero": {
+      "title": "Design Your Dream Jewelry with AI",
+      "subtitle": "Create unique, custom-made jewelry pieces using artificial intelligence. From concept to reality in minutes.",
+      "cta": "Start Designing",
+      "secondary": "How It Works"
+    },
+    "features": {
+      "title": "Why Choose Us",
+      "ai": {
+        "title": "AI-Powered Design",
+        "description": "Describe your vision and watch AI bring it to life in stunning 3D"
+      },
+      "preview": {
+        "title": "Real-Time 3D Preview",
+        "description": "See your jewelry from every angle before committing"
+      },
+      "pricing": {
+        "title": "Transparent Pricing",
+        "description": "Know the exact cost based on materials and craftsmanship"
+      },
+      "quality": {
+        "title": "Expert Craftsmanship",
+        "description": "Handcrafted by master jewelers using premium materials"
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "step1": {
+        "title": "Describe Your Vision",
+        "description": "Tell us what you're looking for - style, occasion, preferences"
+      },
+      "step2": {
+        "title": "AI Creates Designs",
+        "description": "Our AI generates unique 3D jewelry designs based on your input"
+      },
+      "step3": {
+        "title": "Refine & Customize",
+        "description": "Chat with AI to perfect your design - adjust size, add stones, change materials"
+      },
+      "step4": {
+        "title": "We Craft It",
+        "description": "Master jewelers handcraft your unique piece with premium materials"
+      }
+    },
+    "stats": {
+      "designs": "Designs Created",
+      "jewelers": "Master Jewelers",
+      "rating": "Star Rating",
+      "support": "AI Support"
+    },
+    "preview3d": "3D Preview Coming Soon",
+    "cta": {
+      "title": "Ready to Create Something Unique?",
+      "subtitle": "Start designing your custom jewelry today",
+      "button": "Start Free Design"
+    }
+  },
+  "design": {
+    "wizard": {
+      "title": "Let's Design Your Perfect Piece",
+      "back": "Back",
+      "next": "Next",
+      "startDesigning": "Start Designing",
+      "step1": {
+        "title": "Who is this for?",
+        "subtitle": "Help us understand who will wear this beautiful piece",
+        "man": "Man",
+        "woman": "Woman",
+        "unisex": "Unisex"
+      },
+      "step2": {
+        "title": "What would you like to create?",
+        "subtitle": "Choose the type of jewelry",
+        "ring": "Ring",
+        "necklace": "Necklace",
+        "bracelet": "Bracelet",
+        "earrings": "Earrings"
+      },
+      "step3": {
+        "title": "Choose your style",
+        "subtitle": "Select a style that speaks to you",
+        "classic": "Classic",
+        "modern": "Modern",
+        "vintage": "Vintage",
+        "minimalist": "Minimalist",
+        "bold": "Bold"
+      }
+    },
+    "studio": {
+      "title": "Design Studio",
+      "promptPlaceholder": "Describe your dream jewelry... (e.g., 'An elegant gold ring with a subtle wave pattern and a small diamond')",
+      "generate": "Generate Design",
+      "regenerate": "Generate New",
+      "refine": "Refine Design",
+      "creatingImage": "Creating image...",
+      "convertingTo3D": "Converting to 3D model...",
+      "creating3DModel": "Creating 3D model...",
+      "convertingProgress": "Converting to 3D... {progress}%",
+      "generating": "Generating...",
+      "generationFailed": "Failed to generate design. Please try again.",
+      "suggestions": {
+        "title": "Try these ideas",
+        "items": [
+          "Classic solitaire engagement ring",
+          "Delicate chain necklace with pendant",
+          "Modern geometric bracelet",
+          "Elegant drop earrings"
+        ]
+      },
+      "chat": {
+        "placeholder": "Ask to modify the design... (e.g., 'Make it thinner' or 'Add small diamonds')",
+        "send": "Send",
+        "emptyState": "Chat with AI to refine your design",
+        "errorMessage": "Sorry, I encountered an error. Please try again.",
+        "suggestions": {
+          "thinner": "Make it thinner",
+          "addDiamonds": "Add small diamonds",
+          "moreElegant": "Make it more elegant",
+          "addTexture": "Add texture"
+        }
+      },
+      "materials": {
+        "title": "Material",
+        "gold14k": "14K Gold",
+        "gold18k": "18K Gold",
+        "gold24k": "24K Gold",
+        "silver": "Sterling Silver",
+        "platinum": "Platinum"
+      },
+      "stones": {
+        "title": "Add Stones",
+        "none": "No Stones",
+        "diamond": "Diamond",
+        "sapphire": "Sapphire",
+        "ruby": "Ruby",
+        "emerald": "Emerald"
+      }
+    },
+    "preview": {
+      "title": "Your Design",
+      "loading": "Creating your design...",
+      "noDesign": "Your design will appear here",
+      "rotate": "Drag to rotate",
+      "zoom": "Scroll to zoom",
+      "imageAlt": "Design preview",
+      "modelAlt": "3D jewelry design",
+      "toggleFullscreen": "Toggle fullscreen"
+    },
+    "pricing": {
+      "title": "Price Estimate",
+      "materials": "Materials",
+      "stones": "Stones",
+      "labor": "Craftsmanship",
+      "total": "Total",
+      "note": "Final price may vary slightly based on exact specifications",
+      "generatePrompt": "Generate a design to see pricing"
+    },
+    "actions": {
+      "addToCart": "Add to Cart",
+      "saveDesign": "Save Design",
+      "share": "Share",
+      "startOver": "Start Over"
+    }
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "emptySubtitle": "Start designing your perfect jewelry piece",
+    "startDesigning": "Start Designing",
+    "item": "Item",
+    "quantity": "Qty",
+    "price": "Price",
+    "remove": "Remove",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "shippingNote": "Shipping calculated at checkout",
+    "tax": "Tax",
+    "total": "Total",
+    "checkout": "Proceed to Checkout",
+    "continueShopping": "Continue Shopping",
+    "size": "Size"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "shipping": {
+      "title": "Shipping Information",
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone",
+      "street": "Street Address",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "country": "Country"
+    },
+    "payment": {
+      "title": "Payment Method",
+      "card": "Credit Card",
+      "installments": "Installments"
+    },
+    "summary": {
+      "title": "Order Summary"
+    },
+    "placeOrder": "Place Order",
+    "processing": "Processing...",
+    "orderConfirmed": "Order Confirmed!",
+    "thankYou": "Thank you for your order. You will receive a confirmation email shortly.",
+    "returnHome": "Return to Home",
+    "paymentProvider": "Payment form will be provided by Tranzila",
+    "paymentSecure": "Your payment information is secure and encrypted",
+    "freeShipping": "Free",
+    "meshulam": "Meshulam"
+  },
+  "account": {
+    "title": "My Account",
+    "defaultUser": "User",
+    "menu": {
+      "designsDescription": "View and manage your saved designs",
+      "ordersDescription": "Track your order history",
+      "addressesDescription": "Manage your shipping addresses",
+      "settingsDescription": "Update your account preferences"
+    },
+    "designs": {
+      "title": "My Designs",
+      "empty": "You haven't saved any designs yet"
+    },
+    "orders": {
+      "title": "My Orders",
+      "empty": "You haven't placed any orders yet",
+      "status": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "manufacturing": "In Production",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "cancelled": "Cancelled"
+      }
+    },
+    "addresses": {
+      "title": "Saved Addresses",
+      "add": "Add Address"
+    },
+    "settings": {
+      "title": "Settings"
+    }
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "signInSubtitle": "Sign in to save your designs and track orders",
+    "continueAsGuest": "Continue as Guest",
+    "termsPrefix": "By signing in, you agree to our",
+    "termsLink": "Terms of Service",
+    "and": "and",
+    "privacyLink": "Privacy Policy",
+    "errorOAuth": "This email is already associated with another account. Please sign in with the original provider.",
+    "errorGeneric": "An error occurred during sign in. Please try again.",
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "orContinueWith": "Or continue with",
+    "google": "Continue with Google",
+    "facebook": "Continue with Facebook",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?"
+  },
+  "footer": {
+    "about": "About Us",
+    "contact": "Contact",
+    "faq": "FAQ",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "shipping": "Shipping & Returns",
+    "copyright": "© {year} Gold AI. All rights reserved.",
+    "description": "Create unique, custom-made jewelry pieces using artificial intelligence. From concept to reality in minutes.",
+    "company": "Company",
+    "legal": "Legal",
+    "socialFacebook": "Facebook",
+    "socialInstagram": "Instagram",
+    "socialTwitter": "Twitter"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email",
+    "invalidPhone": "Please enter a valid phone number",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must be at most {max} characters",
+    "generic": "Something went wrong. Please try again.",
+    "unauthorized": "Please sign in to continue",
+    "notFound": "Page not found"
+  }
+}
