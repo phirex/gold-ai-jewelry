@@ -167,61 +167,61 @@ export function ImageRefinementStep() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Image Grid */}
         <div className="lg:col-span-2 space-y-4">
-          {/* Loading State */}
-          {isGenerating && variations.length === 0 && (
-            <div className="aspect-square rounded-2xl bg-dark-800 border border-dark-700 flex flex-col items-center justify-center gap-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gold-500/20 rounded-full blur-xl animate-pulse" />
-                <Loader2 className="w-12 h-12 text-gold-400 animate-spin relative" />
-              </div>
-              <p className="text-dark-300">{t("generating")}</p>
-            </div>
-          )}
+          {/* Image Grid - Always show 4 slots */}
+          <div className="grid grid-cols-2 gap-4">
+            {Array(4).fill(null).map((_, index) => {
+              const imageUrl = variations[index];
+              const isLoading = isGenerating && !imageUrl;
 
-          {/* Image Grid */}
-          {!isGenerating || variations.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4">
-              {(isGenerating ? [...variations, null, null, null, null].slice(0, 4) : variations).map(
-                (imageUrl, index) => (
-                  <button
-                    key={index}
-                    onClick={() => imageUrl && setSelectedImageUrl(imageUrl)}
-                    disabled={!imageUrl || isGenerating}
-                    className={cn(
-                      "relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
-                      "bg-dark-800",
-                      imageUrl && selectedImageUrl === imageUrl
-                        ? "border-gold-500 ring-4 ring-gold-500/20 shadow-lg shadow-gold-500/20"
-                        : imageUrl
-                        ? "border-dark-700 hover:border-gold-500/50"
-                        : "border-dark-700",
-                      "animate-fade-in-up"
-                    )}
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    {imageUrl ? (
-                      <>
-                        <img
-                          src={imageUrl}
-                          alt={`Design variation ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                        {selectedImageUrl === imageUrl && (
-                          <div className="absolute top-3 right-3 w-8 h-8 bg-gold-500 rounded-full flex items-center justify-center animate-scale-in">
-                            <Check className="w-5 h-5 text-dark-900" />
+              return (
+                <button
+                  key={index}
+                  onClick={() => imageUrl && !isGenerating && setSelectedImageUrl(imageUrl)}
+                  disabled={!imageUrl || isGenerating}
+                  className={cn(
+                    "relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
+                    "bg-dark-800",
+                    imageUrl && selectedImageUrl === imageUrl
+                      ? "border-gold-500 ring-4 ring-gold-500/20 shadow-lg shadow-gold-500/20"
+                      : imageUrl
+                      ? "border-dark-700 hover:border-gold-500/50"
+                      : "border-dark-700",
+                    "animate-fade-in-up"
+                  )}
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  {imageUrl ? (
+                    <>
+                      <img
+                        src={imageUrl}
+                        alt={`Design variation ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                      {selectedImageUrl === imageUrl && (
+                        <div className="absolute top-3 right-3 w-8 h-8 bg-gold-500 rounded-full flex items-center justify-center animate-scale-in">
+                          <Check className="w-5 h-5 text-dark-900" />
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                      {isLoading ? (
+                        <>
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-gold-500/20 rounded-full blur-lg animate-pulse" />
+                            <Loader2 className="w-8 h-8 text-gold-400 animate-spin relative" />
                           </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Loader2 className="w-8 h-8 text-dark-600 animate-spin" />
-                      </div>
-                    )}
-                  </button>
-                )
-              )}
-            </div>
-          ) : null}
+                          <span className="text-xs text-dark-500">{t("generating")}</span>
+                        </>
+                      ) : (
+                        <span className="text-dark-600 text-sm">#{index + 1}</span>
+                      )}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
           {/* Selection hint */}
           {variations.length > 0 && !selectedImageUrl && !isGenerating && (

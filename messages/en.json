@@ -89,6 +89,22 @@
     }
   },
   "design": {
+    "chat": {
+      "title": "AI Design Assistant",
+      "placeholder": "Ask to modify the design...",
+      "send": "Send",
+      "show": "Show Chat",
+      "hide": "Hide Chat",
+      "emptyState": "Describe changes you'd like to make",
+      "errorMessage": "Sorry, I encountered an error. Please try again.",
+      "suggestions": {
+        "title": "Quick suggestions",
+        "thinner": "Make it thinner",
+        "addDiamonds": "Add small diamonds",
+        "moreDetails": "Add more details",
+        "simpler": "Make it simpler"
+      }
+    },
     "wizard": {
       "title": "Let's Design Your Perfect Piece",
       "back": "Back",
@@ -164,7 +180,7 @@
       },
       "refine": {
         "title": "Refine Your Design",
-        "subtitle": "Pick your favorite or request changes",
+        "subtitle": "Pick your favorite or request changes - you can always refine it later",
         "generating": "Creating your designs...",
         "selectOne": "Click an image to select it",
         "selected": "Selected",
