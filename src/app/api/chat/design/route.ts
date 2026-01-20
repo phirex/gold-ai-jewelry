@@ -8,8 +8,9 @@ const chatSchema = z.object({
   context: z
     .object({
       jewelryType: z.string(),
-      targetGender: z.string(),
-      style: z.string(),
+      gender: z.string().optional(),
+      targetGender: z.string().optional(),
+      style: z.string().optional(),
       material: z.string(),
       currentPrompt: z.string(),
       locale: z.enum(["en", "he"]).optional(),

@@ -18,6 +18,7 @@ import {
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
 import { Button } from "@/components/ui/Button";
+import { HeroModelViewer } from "@/components/home/HeroModelViewer";
 import { cn } from "@/lib/utils/cn";
 
 // Animated counter hook
@@ -136,19 +137,26 @@ export default function HomePage() {
             <div className="absolute top-20 left-20 w-[400px] h-[400px] bg-gold-600/5 rounded-full blur-[100px] animate-float-slow" />
             <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-gold-400/5 rounded-full blur-[100px] animate-float" />
 
-            {/* Floating gold particles */}
-            {[...Array(20)].map((_, i) => (
-              <div
-                key={i}
-                className="absolute w-1 h-1 bg-gold-400/40 rounded-full animate-float"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 5}s`,
-                  animationDuration: `${4 + Math.random() * 6}s`,
-                }}
-              />
-            ))}
+            {/* Floating gold particles - using deterministic positions to avoid hydration errors */}
+            {[...Array(20)].map((_, i) => {
+              // Deterministic pseudo-random positions based on index
+              const left = ((i * 37 + 13) % 100);
+              const top = ((i * 53 + 7) % 100);
+              const delay = (i * 0.25) % 5;
+              const duration = 4 + (i % 6);
+              return (
+                <div
+                  key={i}
+                  className="absolute w-1 h-1 bg-gold-400/40 rounded-full animate-float"
+                  style={{
+                    left: `${left}%`,
+                    top: `${top}%`,
+                    animationDelay: `${delay}s`,
+                    animationDuration: `${duration}s`,
+                  }}
+                />
+              );
+            })}
 
             {/* Grid pattern overlay */}
             <div
@@ -185,7 +193,7 @@ export default function HomePage() {
                 <Link href="/design">
                   <Button variant="gradient" size="lg" className="text-lg px-10 py-6 group">
                     {t("hero.cta")}
-                    <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="ml-3 rtl:ml-0 rtl:mr-3 h-5 w-5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180" />
                   </Button>
                 </Link>
                 <Link href="#how-it-works">
@@ -199,7 +207,7 @@ export default function HomePage() {
                 </Link>
               </div>
 
-              {/* Hero Preview */}
+              {/* Hero Preview - 3D Ring Model */}
               <div className="mt-24 max-w-4xl mx-auto animate-fade-in-up delay-300">
                 <div className="relative">
                   {/* Glow behind preview */}
@@ -210,22 +218,14 @@ export default function HomePage() {
                     {/* Animated border */}
                     <div className="absolute inset-0 rounded-3xl border border-gold-500/20 animate-border-glow" />
 
-                    {/* Shimmer overlay */}
-                    <div className="absolute inset-0 shimmer-gold opacity-30" />
-
-                    {/* Content */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-8">
-                      <div className="w-28 h-28 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center mb-8 animate-pulse-gold-subtle">
-                        <Sparkles className="h-14 w-14 text-dark-900" />
-                      </div>
-                      <p className="text-xl text-dark-200 font-medium">{t("preview3d")}</p>
-                    </div>
+                    {/* 3D Model Viewer */}
+                    <HeroModelViewer className="absolute inset-0" />
 
                     {/* Corner accents */}
-                    <div className="absolute top-6 left-6 w-12 h-12 border-l-2 border-t-2 border-gold-500/40 rounded-tl-xl" />
-                    <div className="absolute top-6 right-6 w-12 h-12 border-r-2 border-t-2 border-gold-500/40 rounded-tr-xl" />
-                    <div className="absolute bottom-6 left-6 w-12 h-12 border-l-2 border-b-2 border-gold-500/40 rounded-bl-xl" />
-                    <div className="absolute bottom-6 right-6 w-12 h-12 border-r-2 border-b-2 border-gold-500/40 rounded-br-xl" />
+                    <div className="absolute top-6 left-6 w-12 h-12 border-l-2 border-t-2 border-gold-500/40 rounded-tl-xl pointer-events-none" />
+                    <div className="absolute top-6 right-6 w-12 h-12 border-r-2 border-t-2 border-gold-500/40 rounded-tr-xl pointer-events-none" />
+                    <div className="absolute bottom-6 left-6 w-12 h-12 border-l-2 border-b-2 border-gold-500/40 rounded-bl-xl pointer-events-none" />
+                    <div className="absolute bottom-6 right-6 w-12 h-12 border-r-2 border-b-2 border-gold-500/40 rounded-br-xl pointer-events-none" />
                   </div>
                 </div>
               </div>
@@ -379,19 +379,25 @@ export default function HomePage() {
             }}
           />
 
-          {/* Floating elements */}
-          {[...Array(8)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-4 h-4 bg-white/10 rounded-full animate-float"
-              style={{
-                left: `${10 + Math.random() * 80}%`,
-                top: `${10 + Math.random() * 80}%`,
-                animationDelay: `${Math.random() * 4}s`,
-                animationDuration: `${5 + Math.random() * 5}s`,
-              }}
-            />
-          ))}
+          {/* Floating elements - deterministic positions */}
+          {[...Array(8)].map((_, i) => {
+            const left = 10 + ((i * 41 + 17) % 80);
+            const top = 10 + ((i * 59 + 23) % 80);
+            const delay = (i * 0.5) % 4;
+            const duration = 5 + (i % 5);
+            return (
+              <div
+                key={i}
+                className="absolute w-4 h-4 bg-white/10 rounded-full animate-float"
+                style={{
+                  left: `${left}%`,
+                  top: `${top}%`,
+                  animationDelay: `${delay}s`,
+                  animationDuration: `${duration}s`,
+                }}
+              />
+            );
+          })}
 
           <div className="container mx-auto px-4 text-center relative z-10">
             <h2 className="text-4xl md:text-6xl font-bold mb-8 text-dark-900 animate-fade-in-up">
@@ -406,7 +412,7 @@ export default function HomePage() {
                 className="text-lg px-12 py-6 bg-dark-900 text-gold-400 hover:bg-dark-800 hover:text-gold-300 shadow-2xl group"
               >
                 {t("cta.button")}
-                <ArrowRight className="ml-3 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="ml-3 rtl:ml-0 rtl:mr-3 h-5 w-5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180" />
               </Button>
             </Link>
           </div>

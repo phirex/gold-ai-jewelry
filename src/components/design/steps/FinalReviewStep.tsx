@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Loader2, ShoppingCart, Save, RotateCcw, Check, Image as ImageIcon, Box } from "lucide-react";
+import { Loader2, ShoppingCart, Save, RotateCcw, Image as ImageIcon, Box, ArrowRight } from "lucide-react";
 import { useDesignWizard } from "@/contexts/DesignWizardContext";
 import { useCart } from "@/contexts/CartContext";
 import { ModelViewer } from "@/components/design/ModelViewer";
@@ -38,7 +38,6 @@ export function FinalReviewStep() {
   } = useDesignWizard();
 
   const [taskId, setTaskId] = useState<string | null>(null);
-  const [addedToCart, setAddedToCart] = useState(false);
 
   // Start 3D conversion on mount
   useEffect(() => {
@@ -123,7 +122,7 @@ export function FinalReviewStep() {
     }
   };
 
-  const handleAddToCart = () => {
+  const handleProceedToCheckout = () => {
     if (!modelUrl || !priceBreakdown) return;
 
     addItem({
@@ -136,12 +135,8 @@ export function FinalReviewStep() {
       price: priceBreakdown.total,
     });
 
-    setAddedToCart(true);
-
-    // Navigate to checkout after short delay
-    setTimeout(() => {
-      router.push(`/${locale}/checkout`);
-    }, 1500);
+    // Navigate directly to checkout
+    router.push(`/${locale}/checkout`);
   };
 
   const handleStartOver = () => {
@@ -240,20 +235,12 @@ export function FinalReviewStep() {
           <Button
             variant="gradient"
             className="w-full gap-2"
-            onClick={handleAddToCart}
-            disabled={!modelUrl || addedToCart}
+            onClick={handleProceedToCheckout}
+            disabled={!modelUrl}
           >
-            {addedToCart ? (
-              <>
-                <Check className="w-4 h-4" />
-                {t("addedToCart")}
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="w-4 h-4" />
-                {tActions("addToCart")}
-              </>
-            )}
+            <ShoppingCart className="w-4 h-4" />
+            {t("proceedToCheckout")}
+            <ArrowRight className="w-4 h-4" />
           </Button>
 
           <Button variant="outline" className="w-full gap-2" disabled={!modelUrl}>

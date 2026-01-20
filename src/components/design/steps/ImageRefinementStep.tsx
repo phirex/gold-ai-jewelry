@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { Loader2, RefreshCw, Check, Sparkles, Send, MessageSquare, DollarSign } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import { Loader2, Sparkles, Send, RefreshCw } from "lucide-react";
 import { useDesignWizard } from "@/contexts/DesignWizardContext";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
@@ -15,13 +15,10 @@ interface ChatMessage {
 export function ImageRefinementStep() {
   const t = useTranslations("design.wizard.refine");
   const tChat = useTranslations("design.chat");
+  const locale = useLocale();
   const {
-    variations,
-    setVariations,
     selectedImageUrl,
     setSelectedImageUrl,
-    isGenerating,
-    setIsGenerating,
     constructPrompt,
     jewelryType,
     gender,
@@ -31,57 +28,20 @@ export function ImageRefinementStep() {
     chatSessionId,
   } = useDesignWizard();
 
-  const [currentPrompt, setCurrentPrompt] = useState(constructPrompt());
+  const [currentPrompt] = useState(constructPrompt());
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [isSendingChat, setIsSendingChat] = useState(false);
-  const [showChat, setShowChat] = useState(false);
+  const [isRefining, setIsRefining] = useState(false);
 
-  // Generate initial variations on mount
-  useEffect(() => {
-    if (variations.length === 0 && !isGenerating) {
-      generateVariations(currentPrompt);
-    }
-  }, []);
-
-  // Estimate price based on description
+  // Estimate price on mount
   useEffect(() => {
     if (!priceBreakdown) {
       estimatePrice();
     }
   }, []);
 
-  const generateVariations = async (prompt: string) => {
-    setIsGenerating(true);
-    setSelectedImageUrl(null);
-
-    try {
-      const response = await fetch("/api/designs/generate-variations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt,
-          jewelryType,
-          gender,
-          material,
-          count: 4,
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to generate variations");
-
-      const data = await response.json();
-      setVariations(data.images);
-      setCurrentPrompt(prompt);
-    } catch (error) {
-      console.error("Error generating variations:", error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   const estimatePrice = async () => {
-    // Base price estimation
     const materialMultipliers: Record<string, number> = {
       gold_14k: 0.8,
       gold_18k: 1.0,
@@ -103,8 +63,44 @@ export function ImageRefinementStep() {
     });
   };
 
+  const refineImage = async (refinementPrompt: string) => {
+    if (!selectedImageUrl) return;
+
+    setIsRefining(true);
+    try {
+      const response = await fetch("/api/designs/refine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sourceImageUrl: selectedImageUrl,
+          refinementPrompt,
+          strength: 0.65, // Higher strength for more visible changes
+        }),
+      });
+
+      if (!response.ok) throw new Error("Refinement failed");
+
+      const data = await response.json();
+      if (data.imageUrl) {
+        setSelectedImageUrl(data.imageUrl);
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: t("imageUpdated") },
+        ]);
+      }
+    } catch (error) {
+      console.error("Refinement error:", error);
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: tChat("errorMessage") },
+      ]);
+    } finally {
+      setIsRefining(false);
+    }
+  };
+
   const handleChatSubmit = async () => {
-    if (!chatInput.trim() || isSendingChat) return;
+    if (!chatInput.trim() || isSendingChat || isRefining) return;
 
     const userMessage = chatInput.trim();
     setChatInput("");
@@ -119,10 +115,11 @@ export function ImageRefinementStep() {
           message: userMessage,
           sessionId: chatSessionId,
           context: {
-            jewelryType,
-            gender,
+            jewelryType: jewelryType || "ring",
+            gender: gender || "unisex",
             material,
             currentPrompt,
+            locale: locale as "en" | "he",
           },
         }),
       });
@@ -132,9 +129,10 @@ export function ImageRefinementStep() {
       const data = await response.json();
       setChatMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
 
-      // If Claude suggests regenerating
+      // If AI suggests regenerating, refine the image using img2img
       if (data.shouldRegenerate && data.newPrompt) {
-        generateVariations(data.newPrompt);
+        setIsSendingChat(false);
+        await refineImage(data.newPrompt);
       }
     } catch (error) {
       console.error("Chat error:", error);
@@ -164,102 +162,34 @@ export function ImageRefinementStep() {
         <p className="text-dark-400">{t("subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: Image Grid */}
-        <div className="lg:col-span-2 space-y-4">
-          {/* Image Grid - Always show 4 slots */}
-          <div className="grid grid-cols-2 gap-4">
-            {Array(4).fill(null).map((_, index) => {
-              const imageUrl = variations[index];
-              const isLoading = isGenerating && !imageUrl;
-
-              return (
-                <button
-                  key={index}
-                  onClick={() => imageUrl && !isGenerating && setSelectedImageUrl(imageUrl)}
-                  disabled={!imageUrl || isGenerating}
-                  className={cn(
-                    "relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
-                    "bg-dark-800",
-                    imageUrl && selectedImageUrl === imageUrl
-                      ? "border-gold-500 ring-4 ring-gold-500/20 shadow-lg shadow-gold-500/20"
-                      : imageUrl
-                      ? "border-dark-700 hover:border-gold-500/50"
-                      : "border-dark-700",
-                    "animate-fade-in-up"
-                  )}
-                  style={{ animationDelay: `${index * 100}ms` }}
-                >
-                  {imageUrl ? (
-                    <>
-                      <img
-                        src={imageUrl}
-                        alt={`Design variation ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                      {selectedImageUrl === imageUrl && (
-                        <div className="absolute top-3 right-3 w-8 h-8 bg-gold-500 rounded-full flex items-center justify-center animate-scale-in">
-                          <Check className="w-5 h-5 text-dark-900" />
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                      {isLoading ? (
-                        <>
-                          <div className="relative">
-                            <div className="absolute inset-0 bg-gold-500/20 rounded-full blur-lg animate-pulse" />
-                            <Loader2 className="w-8 h-8 text-gold-400 animate-spin relative" />
-                          </div>
-                          <span className="text-xs text-dark-500">{t("generating")}</span>
-                        </>
-                      ) : (
-                        <span className="text-dark-600 text-sm">#{index + 1}</span>
-                      )}
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Selection hint */}
-          {variations.length > 0 && !selectedImageUrl && !isGenerating && (
-            <p className="text-center text-dark-400 text-sm animate-pulse">
-              {t("selectOne")}
-            </p>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Button
-              variant="outline"
-              onClick={() => generateVariations(currentPrompt)}
-              disabled={isGenerating}
-              className="gap-2"
-            >
-              <RefreshCw className={cn("w-4 h-4", isGenerating && "animate-spin")} />
-              {t("showVariations")}
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => setShowChat(!showChat)}
-              className="gap-2 lg:hidden"
-            >
-              <MessageSquare className="w-4 h-4" />
-              {showChat ? tChat("hide") : tChat("show")}
-            </Button>
-          </div>
-        </div>
-
-        {/* Right: Chat + Price */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        {/* Left: Selected Image */}
         <div className="space-y-4">
+          <div className="relative aspect-square rounded-2xl overflow-hidden border-2 border-gold-500 bg-dark-800">
+            {isRefining ? (
+              <div className="w-full h-full flex flex-col items-center justify-center bg-dark-800">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gold-500/20 rounded-full blur-xl animate-pulse scale-150" />
+                  <RefreshCw className="w-12 h-12 text-gold-400 animate-spin relative" />
+                </div>
+                <span className="text-sm text-gold-400 mt-4">{t("refiningImage")}</span>
+                <span className="text-xs text-dark-500 mt-1">{t("pleaseWait")}</span>
+              </div>
+            ) : (
+              selectedImageUrl && (
+                <img
+                  src={selectedImageUrl}
+                  alt="Selected design"
+                  className="w-full h-full object-cover"
+                />
+              )
+            )}
+          </div>
+
           {/* Price Estimate */}
           {priceBreakdown && (
             <div className="bg-dark-800 rounded-2xl p-5 border border-dark-700 animate-fade-in-up">
-              <div className="flex items-center gap-2 mb-3">
-                <DollarSign className="w-5 h-5 text-gold-400" />
+              <div className="mb-3">
                 <h3 className="font-semibold text-dark-100">{t("estimatedPrice")}</h3>
               </div>
               <div className="text-2xl font-bold text-gradient-gold-bright">
@@ -268,14 +198,16 @@ export function ImageRefinementStep() {
               <p className="text-xs text-dark-500 mt-1">{t("priceNote")}</p>
             </div>
           )}
+        </div>
 
+        {/* Right: Chat */}
+        <div className="space-y-4">
           {/* Chat Panel */}
           <div
             className={cn(
               "bg-dark-800 rounded-2xl border border-dark-700 overflow-hidden animate-fade-in-up",
               "flex flex-col",
-              showChat || "hidden lg:flex",
-              "h-[350px]"
+              "h-[400px]"
             )}
           >
             {/* Chat Header */}
@@ -307,7 +239,7 @@ export function ImageRefinementStep() {
                   </div>
                 ))
               )}
-              {isSendingChat && (
+              {(isSendingChat || isRefining) && (
                 <div className="bg-dark-700 p-3 rounded-xl max-w-[85%]">
                   <Loader2 className="w-4 h-4 text-dark-400 animate-spin" />
                 </div>
@@ -324,13 +256,13 @@ export function ImageRefinementStep() {
                   onKeyDown={(e) => e.key === "Enter" && handleChatSubmit()}
                   placeholder={t("chatPlaceholder")}
                   className="flex-1 px-4 py-2 rounded-xl bg-dark-700 border border-dark-600 text-dark-100 placeholder:text-dark-500 text-sm focus:outline-none focus:border-gold-500/50"
-                  disabled={isSendingChat}
+                  disabled={isSendingChat || isRefining}
                 />
                 <Button
                   variant="gradient"
                   size="sm"
                   onClick={handleChatSubmit}
-                  disabled={!chatInput.trim() || isSendingChat}
+                  disabled={!chatInput.trim() || isSendingChat || isRefining}
                   className="px-3"
                 >
                   <Send className="w-4 h-4" />
@@ -352,7 +284,8 @@ export function ImageRefinementStep() {
                 <button
                   key={index}
                   onClick={() => setChatInput(suggestion)}
-                  className="px-3 py-1.5 text-xs bg-dark-700 text-dark-300 rounded-full hover:bg-dark-600 hover:text-gold-400 transition-all border border-dark-600 hover:border-gold-500/50"
+                  disabled={isSendingChat || isRefining}
+                  className="px-3 py-1.5 text-xs bg-dark-700 text-dark-300 rounded-full hover:bg-dark-600 hover:text-gold-400 transition-all border border-dark-600 hover:border-gold-500/50 disabled:opacity-50"
                 >
                   {suggestion}
                 </button>

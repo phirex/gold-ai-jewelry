@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils/cn";
 const jewelryTypes: { value: JewelryType; emoji: string }[] = [
   { value: "ring", emoji: "💍" },
   { value: "necklace", emoji: "📿" },
-  { value: "bracelet", emoji: "⌚" },
+  { value: "bracelet", emoji: "🔗" },
   { value: "earrings", emoji: "💎" },
 ];
 

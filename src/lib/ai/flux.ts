@@ -50,8 +50,11 @@ export class FluxClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    retryCount = 0
   ): Promise<T> {
+    const MAX_RETRIES = 3;
+
     const response = await fetch(`${REPLICATE_API_URL}${endpoint}`, {
       ...options,
       headers: {
@@ -62,8 +65,27 @@ export class FluxClient {
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`Replicate API error: ${response.status} - ${error}`);
+      const errorText = await response.text();
+
+      // Handle rate limiting with retry
+      if (response.status === 429 && retryCount < MAX_RETRIES) {
+        // Parse retry_after from response if available
+        let retryAfter = 5000; // default 5 seconds
+        try {
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.retry_after) {
+            retryAfter = (errorJson.retry_after + 1) * 1000; // Add 1 second buffer
+          }
+        } catch {
+          // Use default retry time
+        }
+
+        console.log(`Rate limited. Retrying in ${retryAfter}ms (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+        await new Promise((resolve) => setTimeout(resolve, retryAfter));
+        return this.request<T>(endpoint, options, retryCount + 1);
+      }
+
+      throw new Error(`Replicate API error: ${response.status} - ${errorText}`);
     }
 
     return response.json();
@@ -76,66 +98,64 @@ export class FluxClient {
   buildJewelryPrompt(userPrompt: string, context?: JewelryImageContext): string {
     const parts: string[] = [];
 
-    // 1. CRITICAL: Start with explicit product-only instruction
-    parts.push("PRODUCT PHOTOGRAPHY ONLY");
-    parts.push("single isolated jewelry piece on pure white background");
-    parts.push("NO people, NO hands, NO fingers, NO models, NO mannequins");
+    // 1. CRITICAL: Product photography framing
+    parts.push("Professional luxury jewelry product photography");
+    parts.push("single isolated jewelry piece centered on pure white seamless background");
+    parts.push("NO people, NO hands, NO fingers, NO models, NO mannequins, NO skin");
 
-    // 2. Photography style and quality markers
-    parts.push("professional luxury jewelry advertisement photo");
-    parts.push("studio lighting with soft shadows");
-    parts.push("high-end commercial product shot");
-
-    // 3. Jewelry type with specific shape details
+    // 2. Jewelry type with DETAILED physical descriptions
     if (context?.jewelryType) {
       const jewelryDescriptions: Record<string, string> = {
-        ring: "a single elegant finger ring photographed from 3/4 angle showing band and setting, displayed on white surface",
-        necklace: "a pendant necklace laid flat showing full chain and pendant on white surface",
-        bracelet: "a wrist bracelet arranged in oval shape on white background, product only",
-        earrings: "a pair of matching earrings arranged symmetrically on white surface",
+        ring: "a single elegant finger ring with clearly defined circular band, photographed from 3/4 elevated angle showing the band thickness and any setting details, the ring appears to float on reflective white surface with soft shadow beneath",
+        necklace: "a beautiful pendant necklace with delicate chain links visible, laid in gentle S-curve shape showing the full chain length and pendant centerpiece, displayed flat on white surface",
+        bracelet: "a wrist bracelet arranged in natural oval loop shape as if worn, showing clasp detail and link construction, displayed on white surface with subtle reflection",
+        earrings: "a matching pair of earrings arranged symmetrically side by side, showing post or hook details, displayed on white surface with slight separation between them",
       };
       parts.push(jewelryDescriptions[context.jewelryType]);
     }
 
-    // 4. Material with realistic properties
+    // 3. Material with DETAILED realistic metal rendering
     if (context?.material) {
       const materialDescriptions: Record<string, string> = {
-        gold_14k: "made of polished 14K yellow gold with warm lustrous finish",
-        gold_18k: "crafted in gleaming 18K yellow gold with rich golden color",
-        gold_24k: "pure 24K gold with deep warm yellow tone",
-        silver: "sterling silver 925 with bright polished surface",
-        platinum: "platinum with sophisticated brushed finish",
-        white_gold: "white gold with rhodium plating",
-        rose_gold: "rose gold with warm pink undertones",
+        gold_14k: "crafted in polished 14K yellow gold with warm honey-toned lustrous finish, realistic metal reflections showing depth and dimension, subtle gold shimmer",
+        gold_18k: "made of gleaming 18K yellow gold with rich deep golden color and mirror-like polish, light reflections dancing across the surface, luxurious warm glow",
+        gold_24k: "pure 24K gold with deep saturated warm yellow tone, soft buttery glow, highest karat gold appearance with rich color saturation",
+        silver: "sterling silver 925 with bright mirror-polished surface, cool metallic sheen, crisp light reflections, contemporary silver finish",
+        platinum: "platinum with sophisticated satin brushed finish, subtle grey-white metallic luster, premium precious metal appearance",
+        white_gold: "white gold with rhodium plating giving bright silvery finish, mirror polish with cool undertones",
+        rose_gold: "rose gold with romantic warm pink undertones, polished copper-gold blend, soft rosy metallic glow",
       };
-      parts.push(materialDescriptions[context.material] || "precious metal");
+      parts.push(materialDescriptions[context.material] || "precious metal with polished finish");
     }
 
-    // 5. User's specific design description (cleaned of gender references that might confuse the model)
-    // Remove words like "for woman", "for man" which might cause portrait generation
+    // 4. User's specific design description (cleaned of gender references)
     const cleanedPrompt = userPrompt
       .replace(/\bfor (a )?(woman|women|man|men|female|male)\b/gi, "")
       .replace(/\b(woman|women|man|men|female|male)('s)?\b/gi, "")
+      .replace(/\bmasculine\b/gi, "bold substantial")
+      .replace(/\bfeminine\b/gi, "delicate elegant")
       .trim();
     if (cleanedPrompt) {
       parts.push(cleanedPrompt);
     }
 
-    // 6. Style influences
+    // 5. Style influences with more detail
     if (context?.style) {
       const styleDescriptions: Record<string, string> = {
-        classic: "timeless elegant design",
-        modern: "contemporary sleek geometric design",
-        vintage: "antique-inspired intricate details",
-        minimalist: "simple understated pure forms",
-        bold: "dramatic statement piece",
+        classic: "timeless elegant design with refined proportions and traditional craftsmanship",
+        modern: "contemporary sleek geometric design with clean lines and minimalist aesthetic",
+        vintage: "antique-inspired design with intricate filigree details and ornate craftsmanship",
+        minimalist: "simple understated pure forms with clean silhouette and subtle elegance",
+        bold: "dramatic statement piece with substantial presence and eye-catching design",
       };
       parts.push(styleDescriptions[context.style]);
     }
 
-    // 7. Technical photography details
-    parts.push("macro lens, f/8, sharp focus");
-    parts.push("8K ultra high resolution photorealistic");
+    // 6. Professional photography technique details
+    parts.push("shot with macro lens at f/11 for maximum sharpness and depth of field");
+    parts.push("professional three-point studio lighting setup with soft diffused key light");
+    parts.push("subtle gradient shadow beneath jewelry for depth");
+    parts.push("8K ultra high resolution, photorealistic rendering, advertising quality");
 
     return parts.join(", ");
   }
@@ -178,7 +198,9 @@ export class FluxClient {
    * Get the status of a prediction
    */
   async getPredictionStatus(predictionId: string): Promise<ReplicatePrediction> {
-    return this.request<ReplicatePrediction>(`/predictions/${predictionId}`);
+    const status = await this.request<ReplicatePrediction>(`/predictions/${predictionId}`);
+    console.log(`Prediction ${predictionId} status:`, status.status);
+    return status;
   }
 
   /**
@@ -237,10 +259,102 @@ export class FluxClient {
   async generateJewelryImage(
     prompt: string,
     jewelryContext?: JewelryImageContext,
-    options?: FluxGenerationOptions
+    options?: FluxGenerationOptions,
+    waitOptions?: {
+      maxWaitMs?: number;
+      pollIntervalMs?: number;
+      onProgress?: (status: string) => void;
+    }
   ): Promise<string> {
     const predictionId = await this.createPrediction(prompt, options, jewelryContext);
-    return this.waitForCompletion(predictionId);
+    return this.waitForCompletion(predictionId, {
+      maxWaitMs: waitOptions?.maxWaitMs || 25000, // 25 seconds default for jewelry generation
+      pollIntervalMs: waitOptions?.pollIntervalMs || 2000,
+      onProgress: waitOptions?.onProgress,
+    });
+  }
+
+  /**
+   * Create an image-to-image prediction using SDXL
+   * This allows refining an existing image based on a new prompt
+   * SDXL is fast, reliable, and has proper img2img support
+   */
+  async createImg2ImgPrediction(
+    imageUrl: string,
+    prompt: string,
+    options?: {
+      strength?: number; // 0-1, how much to change (0.3 for subtle, 0.65-0.8 for significant changes)
+      steps?: number;
+    }
+  ): Promise<string> {
+    console.log("SDXL img2img prompt:", prompt);
+    console.log("Source image:", imageUrl);
+    console.log("Prompt strength:", options?.strength ?? 0.65);
+
+    // Use SDXL for reliable img2img with prompt guidance
+    const response = await this.request<ReplicatePrediction>(
+      "/predictions",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          version: "stability-ai/sdxl:7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
+          input: {
+            image: imageUrl,
+            prompt: prompt,
+            prompt_strength: options?.strength ?? 0.65, // Higher strength for visible changes
+            num_inference_steps: options?.steps ?? 50, // More steps for better quality
+            guidance_scale: 8.0, // Slightly higher guidance for prompt adherence
+            scheduler: "K_EULER",
+            num_outputs: 1,
+            disable_safety_checker: true, // Disable false positives on jewelry images
+          },
+        }),
+      }
+    );
+
+    console.log("Created SDXL img2img prediction:", response.id, "status:", response.status);
+    return response.id;
+  }
+
+  /**
+   * Refine an existing jewelry image based on a new prompt
+   * Uses SDXL img2img to maintain the base design while applying modifications
+   */
+  async refineJewelryImage(
+    sourceImageUrl: string,
+    refinementPrompt: string,
+    options?: {
+      strength?: number; // 0.3-0.5 for subtle changes, 0.6-0.8 for significant changes
+      maxWaitMs?: number;
+    }
+  ): Promise<string> {
+    console.log("Refining jewelry image with SDXL img2img");
+    console.log("Source:", sourceImageUrl);
+    console.log("Prompt:", refinementPrompt);
+    console.log("Strength:", options?.strength ?? 0.65);
+
+    // The prompt from Claude should already be complete and detailed
+    // Only add quality markers if they're not already present
+    let finalPrompt = refinementPrompt;
+    if (!refinementPrompt.toLowerCase().includes("product photography")) {
+      finalPrompt = `${refinementPrompt}, professional jewelry product photography, pure white background, studio lighting, photorealistic, 8K quality`;
+    }
+
+    console.log("Final SDXL prompt:", finalPrompt);
+
+    const predictionId = await this.createImg2ImgPrediction(
+      sourceImageUrl,
+      finalPrompt,
+      {
+        strength: options?.strength ?? 0.65, // Higher strength for visible changes
+        steps: 50, // More steps for better quality
+      }
+    );
+
+    return this.waitForCompletion(predictionId, {
+      maxWaitMs: options?.maxWaitMs || 60000,
+      pollIntervalMs: 2000,
+    });
   }
 
   /**

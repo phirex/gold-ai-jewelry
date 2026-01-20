@@ -8,14 +8,15 @@ import {
   GenderStep,
   JewelryTypeStep,
   DescriptionStep,
+  ImageSelectionStep,
   ImageRefinementStep,
   FinalReviewStep,
 } from "./steps";
 import { cn } from "@/lib/utils/cn";
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
-const stepIcons = ["👤", "💎", "✏️", "🎨", "✨"];
+const stepIcons = ["👤", "💎", "✏️", "🖼️", "💬", "✨"];
 
 function WizardContent() {
   const t = useTranslations("design.wizard");
@@ -27,6 +28,7 @@ function WizardContent() {
     tSteps("gender"),
     tSteps("type"),
     tSteps("description"),
+    tSteps("select"),
     tSteps("refine"),
     tSteps("review"),
   ];
@@ -40,8 +42,10 @@ function WizardContent() {
       case 3:
         return <DescriptionStep />;
       case 4:
-        return <ImageRefinementStep />;
+        return <ImageSelectionStep />;
       case 5:
+        return <ImageRefinementStep />;
+      case 6:
         return <FinalReviewStep />;
       default:
         return null;
@@ -53,8 +57,10 @@ function WizardContent() {
       case 3:
         return t("generateDesigns");
       case 4:
-        return t("convertTo3D");
+        return t("next"); // Select image step
       case 5:
+        return t("convertTo3D");
+      case 6:
         return null; // No next button on final step
       default:
         return t("next");
@@ -63,7 +69,7 @@ function WizardContent() {
 
   const canGoNext = () => {
     if (step === 4) {
-      // On refinement step, need a selected image to proceed
+      // On image selection step, need a selected image to proceed
       return selectedImageUrl !== null;
     }
     return canProceed();
@@ -148,7 +154,7 @@ function WizardContent() {
       <div className="min-h-[400px]">{renderStep()}</div>
 
       {/* Navigation buttons */}
-      {step < 5 && (
+      {step < 6 && (
         <div className="flex justify-between mt-10 pt-6 border-t border-dark-800">
           <Button
             variant="ghost"
@@ -156,7 +162,7 @@ function WizardContent() {
             disabled={step === 1}
             className={cn(step === 1 ? "invisible" : "")}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className="mr-2 rtl:mr-0 rtl:ml-2 h-4 w-4 rtl:rotate-180" />
             {t("back")}
           </Button>
 
@@ -168,7 +174,7 @@ function WizardContent() {
           >
             {step === 3 && <Sparkles className="h-4 w-4" />}
             {getNextButtonText()}
-            {step !== 3 && <ArrowRight className="h-4 w-4" />}
+            {step !== 3 && <ArrowRight className="h-4 w-4 rtl:rotate-180" />}
           </Button>
         </div>
       )}

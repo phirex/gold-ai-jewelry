@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useCart } from "@/contexts/CartContext";
 import { formatPrice } from "@/lib/pricing/calculator";
-import { ShoppingBag, CreditCard, Truck, ChevronLeft, Check, Sparkles } from "lucide-react";
+import { ShoppingBag, CreditCard, Truck, ChevronLeft, Check, Sparkles, X, ZoomIn } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -26,6 +26,7 @@ export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
   const [step, setStep] = useState<"shipping" | "payment" | "confirmation">("shipping");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [previewImage, setPreviewImage] = useState<{ url: string; name: string } | null>(null);
   const [shippingForm, setShippingForm] = useState<ShippingForm>({
     name: "",
     email: "",
@@ -354,21 +355,32 @@ export default function CheckoutPage() {
               <ul className="divide-y divide-dark-700 mb-4">
                 {items.map((item) => (
                   <li key={item.id} className="py-4 flex gap-3">
-                    <div className="w-16 h-16 bg-dark-700 rounded-xl overflow-hidden flex-shrink-0 border border-dark-600">
+                    <button
+                      type="button"
+                      onClick={() => item.thumbnailUrl && setPreviewImage({ url: item.thumbnailUrl, name: item.name })}
+                      className="relative w-16 h-16 bg-dark-700 rounded-xl overflow-hidden flex-shrink-0 border border-dark-600 group cursor-pointer hover:border-gold-500/50 transition-all"
+                      disabled={!item.thumbnailUrl}
+                    >
                       {item.thumbnailUrl ? (
-                        <Image
-                          src={item.thumbnailUrl}
-                          alt={item.name}
-                          width={64}
-                          height={64}
-                          className="w-full h-full object-cover"
-                        />
+                        <>
+                          <Image
+                            src={item.thumbnailUrl}
+                            alt={item.name}
+                            width={64}
+                            height={64}
+                            className="w-full h-full object-cover"
+                          />
+                          {/* Hover overlay with zoom icon */}
+                          <div className="absolute inset-0 bg-dark-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <ZoomIn className="w-5 h-5 text-gold-400" />
+                          </div>
+                        </>
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gold-400">
                           <ShoppingBag className="w-6 h-6" />
                         </div>
                       )}
-                    </div>
+                    </button>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-medium truncate text-dark-100">{item.name}</h3>
                       <p className="text-xs text-dark-500 capitalize">
@@ -406,6 +418,44 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/90 backdrop-blur-sm animate-fade-in"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div
+            className="relative max-w-lg w-full bg-dark-800 rounded-2xl overflow-hidden border border-dark-700 shadow-2xl animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute top-3 right-3 z-10 w-10 h-10 bg-dark-900/80 hover:bg-dark-900 text-dark-300 hover:text-white rounded-full flex items-center justify-center transition-all"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Image */}
+            <div className="aspect-square relative">
+              <Image
+                src={previewImage.url}
+                alt={previewImage.name}
+                fill
+                className="object-contain"
+                sizes="(max-width: 512px) 100vw, 512px"
+              />
+            </div>
+
+            {/* Image name */}
+            <div className="p-4 border-t border-dark-700">
+              <h3 className="text-center font-medium text-dark-100">{previewImage.name}</h3>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

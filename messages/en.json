@@ -117,6 +117,7 @@
         "gender": "For Who",
         "type": "Jewelry Type",
         "description": "Describe",
+        "select": "Select",
         "refine": "Refine",
         "review": "Review"
       },
@@ -178,17 +179,22 @@
           }
         }
       },
-      "refine": {
-        "title": "Refine Your Design",
-        "subtitle": "Pick your favorite or request changes - you can always refine it later",
+      "select": {
+        "title": "Choose Your Design",
+        "subtitle": "Select the design that speaks to you",
         "generating": "Creating your designs...",
         "selectOne": "Click an image to select it",
-        "selected": "Selected",
-        "showVariations": "Show New Variations",
-        "satisfied": "I'm Satisfied",
+        "regenerate": "Generate New Options"
+      },
+      "refine": {
+        "title": "Refine Your Design",
+        "subtitle": "Chat with our AI to perfect your design",
         "chatPlaceholder": "Describe changes you'd like...",
         "estimatedPrice": "Estimated Price",
-        "priceNote": "Final price may vary based on materials"
+        "priceNote": "Final price may vary based on materials",
+        "refiningImage": "Refining your design...",
+        "pleaseWait": "Please wait",
+        "imageUpdated": "Your design has been updated!"
       },
       "review": {
         "title": "Review Your Design",
@@ -199,7 +205,7 @@
         "model3d": "3D Preview",
         "noImage": "No image selected",
         "waitingForConversion": "Waiting for 3D conversion",
-        "addedToCart": "Added to Cart!"
+        "proceedToCheckout": "Proceed to Checkout"
       }
     },
     "studio": {

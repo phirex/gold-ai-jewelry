@@ -23,6 +23,18 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "platform-lookaside.fbsbx.com", // Facebook profile images
       },
+      {
+        protocol: "https",
+        hostname: "replicate.delivery", // Replicate AI generated images
+      },
+      {
+        protocol: "https",
+        hostname: "*.replicate.delivery", // Replicate AI subdomains
+      },
+      {
+        protocol: "https",
+        hostname: "pbxt.replicate.delivery", // Replicate predictions
+      },
     ],
   },
 

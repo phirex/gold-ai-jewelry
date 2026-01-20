@@ -80,7 +80,7 @@ export function DesignWizardProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<WizardState>(initialState);
 
   const nextStep = useCallback(() => {
-    setState((prev) => ({ ...prev, step: Math.min(prev.step + 1, 5) }));
+    setState((prev) => ({ ...prev, step: Math.min(prev.step + 1, 6) }));
   }, []);
 
   const prevStep = useCallback(() => {
@@ -88,7 +88,7 @@ export function DesignWizardProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const goToStep = useCallback((step: number) => {
-    setState((prev) => ({ ...prev, step: Math.max(1, Math.min(step, 5)) }));
+    setState((prev) => ({ ...prev, step: Math.max(1, Math.min(step, 6)) }));
   }, []);
 
   const setGender = useCallback((gender: Gender) => {
@@ -136,11 +136,39 @@ export function DesignWizardProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const constructPrompt = useCallback(() => {
-    const { gender, jewelryType, description } = state;
+    const { gender, jewelryType, description, material } = state;
     if (!gender || !jewelryType) return "";
 
-    const genderText = gender === "man" ? "men" : gender === "woman" ? "women" : "unisex wear";
-    return `A ${jewelryType} designed for ${genderText}: ${description}`;
+    // Build a rich, detailed prompt for better image generation
+    const genderDescriptions: Record<string, string> = {
+      man: "masculine, bold design suitable for men",
+      woman: "elegant, feminine design for women",
+      unisex: "versatile unisex design",
+    };
+
+    const materialDescriptions: Record<string, string> = {
+      gold_14k: "polished 14K yellow gold with warm lustrous finish",
+      gold_18k: "gleaming 18K yellow gold with rich golden color",
+      gold_24k: "pure 24K gold with deep warm yellow tone",
+      silver: "sterling silver 925 with bright polished surface",
+      platinum: "platinum with sophisticated brushed finish",
+    };
+
+    const jewelryDescriptions: Record<string, string> = {
+      ring: "finger ring with well-defined band",
+      necklace: "necklace with pendant and chain",
+      bracelet: "wrist bracelet",
+      earrings: "pair of matching earrings",
+    };
+
+    const parts: string[] = [
+      `Luxury ${jewelryDescriptions[jewelryType] || jewelryType}`,
+      genderDescriptions[gender] || "",
+      `crafted in ${materialDescriptions[material] || "precious metal"}`,
+      description,
+    ];
+
+    return parts.filter(Boolean).join(", ");
   }, [state]);
 
   const reset = useCallback(() => {
@@ -163,6 +191,8 @@ export function DesignWizardProvider({ children }: { children: ReactNode }) {
       case 4:
         return selectedImageUrl !== null;
       case 5:
+        return true; // Refinement step - can always proceed
+      case 6:
         return modelUrl !== null;
       default:
         return false;

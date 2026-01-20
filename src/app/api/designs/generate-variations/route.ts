@@ -7,7 +7,7 @@ const requestSchema = z.object({
   jewelryType: z.enum(["ring", "necklace", "bracelet", "earrings"]),
   gender: z.enum(["man", "woman", "unisex"]),
   material: z.string().default("gold_18k"),
-  count: z.number().min(1).max(4).default(4),
+  count: z.number().min(1).max(4).default(2),
 });
 
 // Helper to generate placeholder URL
@@ -41,18 +41,21 @@ export async function POST(request: NextRequest) {
       material: validated.material,
     };
 
-    // Variation prompts for diversity
+    // Variation prompts for meaningful diversity between the 2 images
     const variationPrompts = [
-      validated.prompt,
-      `${validated.prompt}, with elegant details`,
-      `${validated.prompt}, refined and sophisticated`,
-      `${validated.prompt}, with unique artistic touches`,
+      // First variation: emphasize classic elegance and polish
+      `${validated.prompt}, classic elegant interpretation with smooth polished surfaces and refined proportions`,
+      // Second variation: emphasize modern details and texture
+      `${validated.prompt}, modern interpretation with subtle textured details and contemporary styling`,
+      // Backup variations if more than 2 requested
+      `${validated.prompt}, with intricate decorative elements`,
+      `${validated.prompt}, minimalist clean design`,
     ];
 
     // Generate images sequentially with delays to avoid rate limiting
-    // Replicate allows 600 req/min, but we add delays for reliability
+    // Low credit accounts have reduced rate limits (1 burst, 6/min), so we add longer delays
     const images: string[] = [];
-    const DELAY_BETWEEN_REQUESTS = 2000; // 2 seconds between requests
+    const DELAY_BETWEEN_REQUESTS = 8000; // 8 seconds between requests for rate limit safety
 
     for (let i = 0; i < validated.count; i++) {
       const variantPrompt = variationPrompts[i % variationPrompts.length];
@@ -72,6 +75,10 @@ export async function POST(request: NextRequest) {
             aspectRatio: "1:1",
             outputFormat: "png",
             outputQuality: 90,
+          },
+          {
+            maxWaitMs: 25000, // Wait at least 25 seconds before timing out
+            pollIntervalMs: 2000,
           }
         );
         console.log(`Image ${i + 1} generated successfully`);
@@ -100,7 +107,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Even on error, return placeholder images so the UI doesn't break
-    const placeholderImages = Array(4)
+    const placeholderImages = Array(2)
       .fill(null)
       .map((_, i) => getPlaceholderUrl("ring", i));
 
