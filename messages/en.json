@@ -94,6 +94,16 @@
       "back": "Back",
       "next": "Next",
       "startDesigning": "Start Designing",
+      "generateDesigns": "Generate Designs",
+      "convertTo3D": "Convert to 3D",
+      "stepOf": "Step {current} of {total}",
+      "steps": {
+        "gender": "For Who",
+        "type": "Jewelry Type",
+        "description": "Describe",
+        "refine": "Refine",
+        "review": "Review"
+      },
       "step1": {
         "title": "Who is this for?",
         "subtitle": "Help us understand who will wear this beautiful piece",
@@ -117,6 +127,63 @@
         "vintage": "Vintage",
         "minimalist": "Minimalist",
         "bold": "Bold"
+      },
+      "description": {
+        "title": "Describe Your Dream {type}",
+        "subtitle": "Tell us about your perfect piece",
+        "placeholder": "Describe your dream {type}... (e.g., elegant design with diamonds, delicate patterns, modern style)",
+        "hint": "Be as detailed as you like - mention stones, patterns, thickness, style, or any inspiration you have",
+        "charCount": "{count}/{max}",
+        "examples": {
+          "title": "Try these for inspiration",
+          "ring": {
+            "classic": "Classic solitaire with a brilliant round diamond",
+            "modern": "Minimalist band with geometric patterns",
+            "vintage": "Vintage filigree with intricate details",
+            "bold": "Bold statement ring with mixed metals"
+          },
+          "necklace": {
+            "delicate": "Delicate teardrop pendant on fine chain",
+            "statement": "Statement collar with layered gold",
+            "layered": "Layered chains with small charms",
+            "pendant": "Modern bar pendant with diamond accent"
+          },
+          "bracelet": {
+            "tennis": "Tennis bracelet with sparkling diamonds",
+            "cuff": "Minimalist open cuff design",
+            "chain": "Chain link with toggle clasp",
+            "bangle": "Hammered gold bangle set"
+          },
+          "earrings": {
+            "studs": "Classic diamond studs",
+            "drops": "Elegant pearl drop earrings",
+            "hoops": "Modern geometric hoops",
+            "threader": "Delicate threader earrings"
+          }
+        }
+      },
+      "refine": {
+        "title": "Refine Your Design",
+        "subtitle": "Pick your favorite or request changes",
+        "generating": "Creating your designs...",
+        "selectOne": "Click an image to select it",
+        "selected": "Selected",
+        "showVariations": "Show New Variations",
+        "satisfied": "I'm Satisfied",
+        "chatPlaceholder": "Describe changes you'd like...",
+        "estimatedPrice": "Estimated Price",
+        "priceNote": "Final price may vary based on materials"
+      },
+      "review": {
+        "title": "Review Your Design",
+        "subtitle": "Your custom jewelry is ready",
+        "converting": "Converting to 3D model...",
+        "conversionProgress": "{progress}% complete",
+        "referenceImage": "Your Design",
+        "model3d": "3D Preview",
+        "noImage": "No image selected",
+        "waitingForConversion": "Waiting for 3D conversion",
+        "addedToCart": "Added to Cart!"
       }
     },
     "studio": {
@@ -141,15 +208,19 @@
         ]
       },
       "chat": {
+        "title": "AI Design Assistant",
         "placeholder": "Ask to modify the design... (e.g., 'Make it thinner' or 'Add small diamonds')",
         "send": "Send",
-        "emptyState": "Chat with AI to refine your design",
+        "show": "Show Chat",
+        "hide": "Hide Chat",
+        "emptyState": "Describe changes you'd like to make",
         "errorMessage": "Sorry, I encountered an error. Please try again.",
         "suggestions": {
+          "title": "Quick suggestions",
           "thinner": "Make it thinner",
           "addDiamonds": "Add small diamonds",
-          "moreElegant": "Make it more elegant",
-          "addTexture": "Add texture"
+          "moreDetails": "Add more details",
+          "simpler": "Make it simpler"
         }
       },
       "materials": {
