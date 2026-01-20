@@ -49,8 +49,10 @@ export async function POST(request: NextRequest) {
       `${validated.prompt}, with unique artistic touches`,
     ];
 
-    // Generate images sequentially with small delays to avoid rate limiting
+    // Generate images sequentially with delays to avoid rate limiting
+    // Replicate allows 600 req/min, but we add delays for reliability
     const images: string[] = [];
+    const DELAY_BETWEEN_REQUESTS = 2000; // 2 seconds between requests
 
     for (let i = 0; i < validated.count; i++) {
       const variantPrompt = variationPrompts[i % variationPrompts.length];
@@ -58,18 +60,21 @@ export async function POST(request: NextRequest) {
       try {
         // Add delay between requests (except for first one)
         if (i > 0) {
-          await delay(500);
+          console.log(`Waiting ${DELAY_BETWEEN_REQUESTS}ms before generating image ${i + 1}...`);
+          await delay(DELAY_BETWEEN_REQUESTS);
         }
 
+        console.log(`Generating image ${i + 1}/${validated.count}...`);
         const imageUrl = await fluxClient.generateJewelryImage(
           variantPrompt,
           jewelryContext,
           {
             aspectRatio: "1:1",
             outputFormat: "png",
-            outputQuality: 95,
+            outputQuality: 90,
           }
         );
+        console.log(`Image ${i + 1} generated successfully`);
         images.push(imageUrl);
       } catch (error) {
         console.error(`Failed to generate variation ${i}:`, error);

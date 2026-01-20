@@ -71,70 +71,71 @@ export class FluxClient {
 
   /**
    * Build a professional jewelry product photography prompt
+   * IMPORTANT: Focuses exclusively on the jewelry item itself, no people
    */
   buildJewelryPrompt(userPrompt: string, context?: JewelryImageContext): string {
     const parts: string[] = [];
 
-    // 1. Photography style and quality markers
-    parts.push("Professional product photography");
-    parts.push("luxury jewelry advertisement");
-    parts.push("studio lighting with soft shadows");
-    parts.push("high-end commercial photo");
+    // 1. CRITICAL: Start with explicit product-only instruction
+    parts.push("PRODUCT PHOTOGRAPHY ONLY");
+    parts.push("single isolated jewelry piece on pure white background");
+    parts.push("NO people, NO hands, NO fingers, NO models, NO mannequins");
 
-    // 2. Jewelry type with specific shape details
+    // 2. Photography style and quality markers
+    parts.push("professional luxury jewelry advertisement photo");
+    parts.push("studio lighting with soft shadows");
+    parts.push("high-end commercial product shot");
+
+    // 3. Jewelry type with specific shape details
     if (context?.jewelryType) {
       const jewelryDescriptions: Record<string, string> = {
-        ring: "a single elegant finger ring photographed from a 3/4 angle showing the band and setting",
-        necklace: "an exquisite pendant necklace laid flat on white surface showing full chain and pendant",
-        bracelet: "a beautiful wrist bracelet arranged in an oval shape on white background",
-        earrings: "a pair of matching earrings arranged symmetrically",
+        ring: "a single elegant finger ring photographed from 3/4 angle showing band and setting, displayed on white surface",
+        necklace: "a pendant necklace laid flat showing full chain and pendant on white surface",
+        bracelet: "a wrist bracelet arranged in oval shape on white background, product only",
+        earrings: "a pair of matching earrings arranged symmetrically on white surface",
       };
       parts.push(jewelryDescriptions[context.jewelryType]);
     }
 
-    // 3. Material with realistic properties
+    // 4. Material with realistic properties
     if (context?.material) {
       const materialDescriptions: Record<string, string> = {
-        gold_14k: "made of polished 14K yellow gold with warm lustrous finish and mirror-like reflections",
-        gold_18k: "crafted in gleaming 18K yellow gold with rich golden color and brilliant shine",
-        gold_24k: "pure 24K gold with deep warm yellow tone and soft satin glow",
-        silver: "sterling silver 925 with bright polished surface and cool metallic sheen",
-        platinum: "platinum with sophisticated brushed finish and white metallic luster",
-        white_gold: "white gold with rhodium plating giving bright silvery appearance",
-        rose_gold: "rose gold with warm pink undertones and romantic soft glow",
+        gold_14k: "made of polished 14K yellow gold with warm lustrous finish",
+        gold_18k: "crafted in gleaming 18K yellow gold with rich golden color",
+        gold_24k: "pure 24K gold with deep warm yellow tone",
+        silver: "sterling silver 925 with bright polished surface",
+        platinum: "platinum with sophisticated brushed finish",
+        white_gold: "white gold with rhodium plating",
+        rose_gold: "rose gold with warm pink undertones",
       };
-      parts.push(materialDescriptions[context.material] || "precious metal with beautiful finish");
+      parts.push(materialDescriptions[context.material] || "precious metal");
     }
 
-    // 4. User's specific design description
-    parts.push(userPrompt);
+    // 5. User's specific design description (cleaned of gender references that might confuse the model)
+    // Remove words like "for woman", "for man" which might cause portrait generation
+    const cleanedPrompt = userPrompt
+      .replace(/\bfor (a )?(woman|women|man|men|female|male)\b/gi, "")
+      .replace(/\b(woman|women|man|men|female|male)('s)?\b/gi, "")
+      .trim();
+    if (cleanedPrompt) {
+      parts.push(cleanedPrompt);
+    }
 
-    // 5. Style influences
+    // 6. Style influences
     if (context?.style) {
       const styleDescriptions: Record<string, string> = {
-        classic: "timeless elegant design with refined proportions",
-        modern: "contemporary sleek design with clean geometric lines",
-        vintage: "antique-inspired design with intricate decorative details",
-        minimalist: "simple understated design with pure clean forms",
-        bold: "statement piece with dramatic striking presence",
+        classic: "timeless elegant design",
+        modern: "contemporary sleek geometric design",
+        vintage: "antique-inspired intricate details",
+        minimalist: "simple understated pure forms",
+        bold: "dramatic statement piece",
       };
       parts.push(styleDescriptions[context.style]);
     }
 
-    // 6. Technical photography details for realism
-    parts.push("shot with macro lens");
-    parts.push("f/8 aperture");
-    parts.push("sharp focus on jewelry");
-    parts.push("pure white seamless background");
-    parts.push("professional jewelry retouching");
-    parts.push("8K ultra high resolution");
-    parts.push("photorealistic");
-    parts.push("real photograph not 3D render");
-
-    // 7. Negative concepts to avoid (embedded in prompt)
-    parts.push("no hands or fingers visible");
-    parts.push("no mannequin");
-    parts.push("isolated product only");
+    // 7. Technical photography details
+    parts.push("macro lens, f/8, sharp focus");
+    parts.push("8K ultra high resolution photorealistic");
 
     return parts.join(", ");
   }
@@ -152,9 +153,9 @@ export class FluxClient {
 
     console.log("Flux prompt:", enhancedPrompt);
 
-    // Use Flux Pro model via Replicate
+    // Use FLUX 1.1 Pro model via Replicate (upgraded from deprecated flux-pro)
     const response = await this.request<ReplicatePrediction>(
-      "/models/black-forest-labs/flux-pro/predictions",
+      "/models/black-forest-labs/flux-1.1-pro/predictions",
       {
         method: "POST",
         body: JSON.stringify({
@@ -162,9 +163,9 @@ export class FluxClient {
             prompt: enhancedPrompt,
             aspect_ratio: options?.aspectRatio || "1:1",
             output_format: options?.outputFormat || "png",
-            output_quality: options?.outputQuality || 100,
+            output_quality: options?.outputQuality || 90,
             safety_tolerance: options?.safetyTolerance ?? 2,
-            prompt_upsampling: options?.promptUpsampling ?? true,
+            prompt_upsampling: false, // Disabled to keep prompts focused on jewelry
           },
         }),
       }
