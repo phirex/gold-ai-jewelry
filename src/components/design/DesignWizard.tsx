@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { ArrowLeft, ArrowRight, Check, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Sparkles, User, Gem, PenLine, Image, MessageSquare } from "lucide-react";
 import { useDesignWizard, DesignWizardProvider } from "@/contexts/DesignWizardContext";
 import { Button } from "@/components/ui/Button";
 import {
@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils/cn";
 
 const TOTAL_STEPS = 6;
 
-const stepIcons = ["👤", "💎", "✏️", "🖼️", "💬", "✨"];
+const StepIcons = [User, Gem, PenLine, Image, MessageSquare, Sparkles];
 
 function WizardContent() {
   const t = useTranslations("design.wizard");
@@ -87,10 +87,10 @@ function WizardContent() {
               className={cn(
                 "text-sm font-medium transition-colors flex-1 text-center",
                 index + 1 === step
-                  ? "text-gold-400"
+                  ? "text-accent-primary"
                   : index + 1 < step
-                  ? "text-dark-400"
-                  : "text-dark-600"
+                  ? "text-text-secondary"
+                  : "text-text-tertiary"
               )}
             >
               {label}
@@ -111,16 +111,19 @@ function WizardContent() {
                   className={cn(
                     "w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all duration-300 border-2",
                     isCurrent
-                      ? "bg-gradient-to-r from-gold-500 to-gold-400 text-dark-900 border-gold-400 shadow-lg shadow-gold-500/30 scale-110"
+                      ? "bg-gradient-to-r from-accent-primary to-accent-secondary text-text-inverse border-accent-primary shadow-lg shadow-accent/30 scale-110"
                       : isCompleted
-                      ? "bg-gold-500/20 text-gold-400 border-gold-500/50"
-                      : "bg-dark-800 text-dark-500 border-dark-700"
+                      ? "bg-accent-primary/20 text-accent-primary border-accent-primary/50"
+                      : "bg-bg-secondary text-text-tertiary border-border"
                   )}
                 >
                   {isCompleted ? (
                     <Check className="h-5 w-5" />
                   ) : (
-                    <span className="text-lg">{stepIcons[index]}</span>
+                    (() => {
+                      const Icon = StepIcons[index];
+                      return <Icon className="h-5 w-5" />;
+                    })()
                   )}
                 </div>
                 {stepNum < TOTAL_STEPS && (
@@ -128,8 +131,8 @@ function WizardContent() {
                     className={cn(
                       "w-8 md:w-16 h-1 mx-1 md:mx-2 rounded-full transition-all duration-500",
                       isCompleted
-                        ? "bg-gradient-to-r from-gold-500 to-gold-400"
-                        : "bg-dark-700"
+                        ? "bg-gradient-to-r from-accent-primary to-accent-secondary"
+                        : "bg-border"
                     )}
                   />
                 )}
@@ -140,11 +143,11 @@ function WizardContent() {
 
         {/* Current step label (mobile) */}
         <div className="md:hidden text-center mt-4">
-          <span className="text-sm text-gold-400 font-medium">
+          <span className="text-sm text-accent-primary font-medium">
             {stepLabels[step - 1]}
           </span>
-          <span className="text-sm text-dark-500 mx-2">•</span>
-          <span className="text-sm text-dark-500">
+          <span className="text-sm text-text-tertiary mx-2">•</span>
+          <span className="text-sm text-text-tertiary">
             {t("stepOf", { current: step, total: TOTAL_STEPS })}
           </span>
         </div>
@@ -155,7 +158,7 @@ function WizardContent() {
 
       {/* Navigation buttons */}
       {step < 6 && (
-        <div className="flex justify-between mt-10 pt-6 border-t border-dark-800">
+        <div className="flex justify-between mt-10 pt-6 border-t border-border">
           <Button
             variant="ghost"
             onClick={prevStep}

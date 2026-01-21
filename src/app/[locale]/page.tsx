@@ -14,6 +14,10 @@ import {
   ArrowRight,
   Gem,
   Star,
+  Play,
+  Shield,
+  Clock,
+  Heart,
 } from "lucide-react";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
@@ -62,6 +66,28 @@ function useCounter(end: number, duration: number = 2000) {
   return { count, ref };
 }
 
+// Scroll reveal hook
+function useScrollReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1, rootMargin: "50px" }
+    );
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
+}
+
 export default function HomePage() {
   const t = useTranslations("home");
   const tCommon = useTranslations("common");
@@ -71,21 +97,25 @@ export default function HomePage() {
       icon: Sparkles,
       title: t("features.ai.title"),
       description: t("features.ai.description"),
+      gradient: "from-accent-primary to-accent-secondary",
     },
     {
       icon: Eye,
       title: t("features.preview.title"),
       description: t("features.preview.description"),
+      gradient: "from-accent-secondary to-accent-tertiary",
     },
     {
       icon: DollarSign,
       title: t("features.pricing.title"),
       description: t("features.pricing.description"),
+      gradient: "from-accent-tertiary to-accent-primary",
     },
     {
       icon: Award,
       title: t("features.quality.title"),
       description: t("features.quality.description"),
+      gradient: "from-accent-primary to-accent-tertiary",
     },
   ];
 
@@ -116,38 +146,59 @@ export default function HomePage() {
     },
   ];
 
+  const trustBadges = [
+    { icon: Shield, label: t("hero.trustBadges.secureCheckout") },
+    { icon: Clock, label: t("hero.trustBadges.fastDelivery") },
+    { icon: Heart, label: t("hero.trustBadges.madeWithLove") },
+    { icon: Award, label: t("hero.trustBadges.qualityGuaranteed") },
+  ];
+
   const stat1 = useCounter(1000);
   const stat2 = useCounter(50);
   const stat3 = useCounter(49);
   const stat4 = useCounter(24);
 
+  const featuresReveal = useScrollReveal();
+  const stepsReveal = useScrollReveal();
+  const ctaReveal = useScrollReveal();
+
   return (
-    <div className="min-h-screen flex flex-col bg-dark-900">
+    <div className="min-h-screen flex flex-col bg-bg-primary">
       <Header />
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-          {/* Animated background elements */}
-          <div className="absolute inset-0">
-            {/* Main radial glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold-500/10 rounded-full blur-[120px] animate-breathe" />
+        <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden">
+          {/* Mesh gradient background */}
+          <div className="absolute inset-0 mesh-gradient opacity-60" />
 
-            {/* Secondary glows */}
-            <div className="absolute top-20 left-20 w-[400px] h-[400px] bg-gold-600/5 rounded-full blur-[100px] animate-float-slow" />
-            <div className="absolute bottom-20 right-20 w-[500px] h-[500px] bg-gold-400/5 rounded-full blur-[100px] animate-float" />
+          {/* Animated organic blobs */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div
+              className="absolute -top-40 -right-40 w-96 h-96 bg-accent-primary/20 rounded-full blur-3xl animate-blob"
+              style={{ animationDelay: "0s" }}
+            />
+            <div
+              className="absolute top-1/2 -left-40 w-80 h-80 bg-accent-secondary/20 rounded-full blur-3xl animate-blob"
+              style={{ animationDelay: "2s" }}
+            />
+            <div
+              className="absolute -bottom-40 right-1/4 w-72 h-72 bg-accent-tertiary/20 rounded-full blur-3xl animate-blob"
+              style={{ animationDelay: "4s" }}
+            />
+          </div>
 
-            {/* Floating gold particles - using deterministic positions to avoid hydration errors */}
-            {[...Array(20)].map((_, i) => {
-              // Deterministic pseudo-random positions based on index
+          {/* Floating particles */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            {[...Array(15)].map((_, i) => {
               const left = ((i * 37 + 13) % 100);
               const top = ((i * 53 + 7) % 100);
-              const delay = (i * 0.25) % 5;
-              const duration = 4 + (i % 6);
+              const delay = (i * 0.3) % 5;
+              const duration = 6 + (i % 4);
               return (
                 <div
                   key={i}
-                  className="absolute w-1 h-1 bg-gold-400/40 rounded-full animate-float"
+                  className="absolute w-2 h-2 bg-accent-primary/30 rounded-full animate-float"
                   style={{
                     left: `${left}%`,
                     top: `${top}%`,
@@ -157,75 +208,82 @@ export default function HomePage() {
                 />
               );
             })}
-
-            {/* Grid pattern overlay */}
-            <div
-              className="absolute inset-0 opacity-[0.02]"
-              style={{
-                backgroundImage: `linear-gradient(rgba(212, 160, 0, 0.3) 1px, transparent 1px),
-                                  linear-gradient(90deg, rgba(212, 160, 0, 0.3) 1px, transparent 1px)`,
-                backgroundSize: '60px 60px',
-              }}
-            />
           </div>
 
           <div className="container mx-auto px-4 relative z-10 py-20">
-            <div className="max-w-5xl mx-auto text-center">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full glass-gold mb-10 animate-fade-in-down">
-                <Gem className="h-5 w-5 text-gold-400" />
-                <span className="text-gold-300 font-medium tracking-wide">{tCommon("appName")}</span>
-                <div className="w-2 h-2 bg-gold-400 rounded-full animate-pulse" />
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              {/* Left: Content */}
+              <div className="text-center lg:text-left rtl:lg:text-right">
+                {/* Badge */}
+                <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full glass-card mb-8 animate-fade-in-down">
+                  <Gem className="h-5 w-5 text-accent-primary" />
+                  <span className="text-text-secondary font-medium tracking-wide">
+                    {tCommon("appName")}
+                  </span>
+                  <div className="w-2 h-2 bg-accent-primary rounded-full animate-pulse" />
+                </div>
+
+                {/* Main heading */}
+                <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold mb-8 animate-fade-in-up tracking-tight leading-[1.1]">
+                  <span className="text-text-primary">{t("hero.title").split(" ").slice(0, -2).join(" ")} </span>
+                  <span className="text-gradient">{t("hero.title").split(" ").slice(-2).join(" ")}</span>
+                </h1>
+
+                {/* Subtitle */}
+                <p className="text-xl md:text-2xl text-text-secondary mb-10 max-w-xl leading-relaxed animate-fade-in-up" style={{ animationDelay: "100ms" }}>
+                  {t("hero.subtitle")}
+                </p>
+
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row rtl:sm:flex-row-reverse gap-4 justify-center lg:justify-start rtl:lg:justify-start animate-fade-in-up" style={{ animationDelay: "200ms" }}>
+                  <Link href="/design">
+                    <Button variant="gradient" size="lg" className="text-lg px-8 group">
+                      {t("hero.cta")}
+                      <ArrowRight className="ml-2 rtl:ml-0 rtl:mr-2 h-5 w-5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180" />
+                    </Button>
+                  </Link>
+                  <Link href="#how-it-works">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="text-lg px-8 group"
+                    >
+                      <Play className="mr-2 rtl:mr-0 rtl:ml-2 h-5 w-5" />
+                      {t("hero.secondary")}
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* Trust indicators */}
+                <div className="mt-12 flex flex-wrap gap-6 justify-center lg:justify-start rtl:lg:justify-end rtl:flex-row-reverse animate-fade-in-up" style={{ animationDelay: "300ms" }}>
+                  {trustBadges.map((badge, i) => (
+                    <div key={i} className="flex items-center gap-2 text-text-tertiary">
+                      <badge.icon className="h-4 w-4 text-accent-primary" />
+                      <span className="text-sm font-medium">{badge.label}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Main heading */}
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 animate-fade-in-up tracking-tight">
-                <span className="text-gradient-gold-bright">{t("hero.title")}</span>
-              </h1>
-
-              {/* Subtitle */}
-              <p className="text-xl md:text-2xl text-dark-200 mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in-up delay-100">
-                {t("hero.subtitle")}
-              </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-5 justify-center animate-fade-in-up delay-200">
-                <Link href="/design">
-                  <Button variant="gradient" size="lg" className="text-lg px-10 py-6 group">
-                    {t("hero.cta")}
-                    <ArrowRight className="ml-3 rtl:ml-0 rtl:mr-3 h-5 w-5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180" />
-                  </Button>
-                </Link>
-                <Link href="#how-it-works">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="text-lg px-10 py-6 border-dark-500 text-dark-100 hover:bg-dark-800 hover:border-gold-500/50"
-                  >
-                    {t("hero.secondary")}
-                  </Button>
-                </Link>
-              </div>
-
-              {/* Hero Preview - 3D Ring Model */}
-              <div className="mt-24 max-w-4xl mx-auto animate-fade-in-up delay-300">
+              {/* Right: 3D Preview */}
+              <div className="animate-fade-in-up lg:animate-fade-in-left" style={{ animationDelay: "400ms" }}>
                 <div className="relative">
-                  {/* Glow behind preview */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-gold-500/20 via-gold-400/30 to-gold-500/20 rounded-3xl blur-2xl opacity-60" />
+                  {/* Glow effect */}
+                  <div className="absolute -inset-4 bg-gradient-to-br from-accent-primary/20 via-accent-secondary/20 to-accent-tertiary/20 rounded-3xl blur-2xl" />
 
                   {/* Main preview container */}
-                  <div className="relative glass-card rounded-3xl overflow-hidden aspect-video">
-                    {/* Animated border */}
-                    <div className="absolute inset-0 rounded-3xl border border-gold-500/20 animate-border-glow" />
+                  <div className="relative glass-card rounded-3xl overflow-hidden aspect-square shadow-heavy">
+                    {/* Subtle inner border */}
+                    <div className="absolute inset-0 rounded-3xl border border-accent-primary/10" />
 
                     {/* 3D Model Viewer */}
                     <HeroModelViewer className="absolute inset-0" />
 
                     {/* Corner accents */}
-                    <div className="absolute top-6 left-6 w-12 h-12 border-l-2 border-t-2 border-gold-500/40 rounded-tl-xl pointer-events-none" />
-                    <div className="absolute top-6 right-6 w-12 h-12 border-r-2 border-t-2 border-gold-500/40 rounded-tr-xl pointer-events-none" />
-                    <div className="absolute bottom-6 left-6 w-12 h-12 border-l-2 border-b-2 border-gold-500/40 rounded-bl-xl pointer-events-none" />
-                    <div className="absolute bottom-6 right-6 w-12 h-12 border-r-2 border-b-2 border-gold-500/40 rounded-br-xl pointer-events-none" />
+                    <div className="absolute top-4 left-4 w-8 h-8 border-l-2 border-t-2 border-accent-primary/40 rounded-tl-lg pointer-events-none" />
+                    <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-accent-primary/40 rounded-tr-lg pointer-events-none" />
+                    <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-accent-primary/40 rounded-bl-lg pointer-events-none" />
+                    <div className="absolute bottom-4 right-4 w-8 h-8 border-r-2 border-b-2 border-accent-primary/40 rounded-br-lg pointer-events-none" />
                   </div>
                 </div>
               </div>
@@ -233,79 +291,91 @@ export default function HomePage() {
           </div>
 
           {/* Scroll indicator */}
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-            <div className="w-6 h-10 rounded-full border-2 border-dark-500 flex items-start justify-center p-2">
-              <div className="w-1.5 h-3 bg-gold-400 rounded-full animate-pulse" />
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 rounded-full border-2 border-border flex items-start justify-center p-2">
+              <div className="w-1.5 h-3 bg-accent-primary rounded-full animate-pulse" />
             </div>
           </div>
         </section>
 
         {/* Stats Section */}
-        <section className="py-20 relative overflow-hidden border-y border-dark-700">
-          <div className="absolute inset-0 bg-gradient-to-r from-dark-800 via-dark-850 to-dark-800" />
-
+        <section className="py-16 relative overflow-hidden bg-bg-secondary border-y border-border">
           <div className="container mx-auto px-4 relative z-10">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-              <div ref={stat1.ref} className="text-center">
-                <div className="text-4xl md:text-6xl font-bold text-gradient-gold mb-3">
+              <div ref={stat1.ref} className="text-center group">
+                <div className="text-4xl md:text-5xl font-display font-bold text-accent-primary mb-2 group-hover:scale-105 transition-transform">
                   {stat1.count}+
                 </div>
-                <div className="text-dark-300 font-medium">{t("stats.designs")}</div>
+                <div className="text-text-secondary font-medium">{t("stats.designs")}</div>
               </div>
-              <div ref={stat2.ref} className="text-center">
-                <div className="text-4xl md:text-6xl font-bold text-gradient-gold mb-3">
+              <div ref={stat2.ref} className="text-center group">
+                <div className="text-4xl md:text-5xl font-display font-bold text-accent-primary mb-2 group-hover:scale-105 transition-transform">
                   {stat2.count}+
                 </div>
-                <div className="text-dark-300 font-medium">{t("stats.jewelers")}</div>
+                <div className="text-text-secondary font-medium">{t("stats.jewelers")}</div>
               </div>
-              <div ref={stat3.ref} className="text-center">
-                <div className="text-4xl md:text-6xl font-bold text-gradient-gold mb-3 flex items-center justify-center gap-2">
+              <div ref={stat3.ref} className="text-center group">
+                <div className="text-4xl md:text-5xl font-display font-bold text-accent-primary mb-2 flex items-center justify-center gap-2 group-hover:scale-105 transition-transform">
                   {(stat3.count / 10).toFixed(1)}
-                  <Star className="h-8 w-8 text-gold-400 fill-gold-400" />
+                  <Star className="h-6 w-6 text-accent-secondary fill-accent-secondary" />
                 </div>
-                <div className="text-dark-300 font-medium">{t("stats.rating")}</div>
+                <div className="text-text-secondary font-medium">{t("stats.rating")}</div>
               </div>
-              <div ref={stat4.ref} className="text-center">
-                <div className="text-4xl md:text-6xl font-bold text-gradient-gold mb-3">
+              <div ref={stat4.ref} className="text-center group">
+                <div className="text-4xl md:text-5xl font-display font-bold text-accent-primary mb-2 group-hover:scale-105 transition-transform">
                   {stat4.count}/7
                 </div>
-                <div className="text-dark-300 font-medium">{t("stats.support")}</div>
+                <div className="text-text-secondary font-medium">{t("stats.support")}</div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Features Section */}
-        <section className="py-32 relative">
-          <div className="absolute inset-0 radial-glow" />
+        {/* Features Section - Bento Grid */}
+        <section ref={featuresReveal.ref} className="py-24 md:py-32 relative overflow-hidden">
+          {/* Decorative blob */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent-primary/5 rounded-full blur-3xl pointer-events-none" />
 
           <div className="container mx-auto px-4 relative z-10">
-            <div className="text-center mb-20">
-              <h2 className="text-4xl md:text-6xl font-bold mb-6">
-                <span className="text-gradient-gold">{t("features.title")}</span>
+            <div className={cn(
+              "text-center mb-16 transition-all duration-700",
+              featuresReveal.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            )}>
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                <span className="text-text-primary">{t("features.title").split(" ").slice(0, -1).join(" ")} </span>
+                <span className="text-gradient">{t("features.title").split(" ").slice(-1)}</span>
               </h2>
-              <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-gold-500 to-transparent" />
+              <p className="text-lg text-text-secondary max-w-2xl mx-auto">
+                {t("features.subtitle")}
+              </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Features grid - 4 equal columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {features.map((feature, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "card-luxury p-8 hover-lift group animate-fade-in-up cursor-default"
+                    "glass-card p-8 rounded-2xl hover-lift group cursor-default transition-all duration-500",
+                    featuresReveal.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                   )}
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  style={{ transitionDelay: `${index * 100}ms` }}
                 >
                   {/* Icon */}
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-gold-500 to-gold-700 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-gold-500/20">
-                    <feature.icon className="h-8 w-8 text-dark-900" />
+                  <div className={cn(
+                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-6",
+                    "bg-gradient-to-br shadow-lg",
+                    feature.gradient,
+                    "group-hover:scale-110 transition-transform duration-300"
+                  )}>
+                    <feature.icon className="h-7 w-7 text-text-inverse" />
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-xl font-semibold mb-4 text-foreground group-hover:text-gold-400 transition-colors">
+                  <h3 className="text-xl font-semibold mb-3 text-text-primary group-hover:text-accent-primary transition-colors">
                     {feature.title}
                   </h3>
-                  <p className="text-dark-300 leading-relaxed">
+                  <p className="text-text-secondary leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -315,46 +385,54 @@ export default function HomePage() {
         </section>
 
         {/* How It Works Section */}
-        <section id="how-it-works" className="py-32 relative bg-dark-850">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-24">
-              <h2 className="text-4xl md:text-6xl font-bold mb-6">
-                <span className="text-gradient-gold">{t("howItWorks.title")}</span>
+        <section id="how-it-works" ref={stepsReveal.ref} className="py-24 md:py-32 relative bg-bg-secondary overflow-hidden">
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-accent-secondary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent-tertiary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+
+          <div className="container mx-auto px-4 relative z-10">
+            <div className={cn(
+              "text-center mb-20 transition-all duration-700",
+              stepsReveal.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            )}>
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                <span className="text-gradient">{t("howItWorks.title")}</span>
               </h2>
-              <div className="w-24 h-1 mx-auto bg-gradient-to-r from-transparent via-gold-500 to-transparent" />
+              <p className="text-lg text-text-secondary max-w-2xl mx-auto">
+                {t("howItWorks.subtitle")}
+              </p>
             </div>
 
             <div className="max-w-6xl mx-auto">
+              {/* Steps timeline */}
               <div className="relative">
                 {/* Connection line - desktop */}
-                <div className="hidden lg:block absolute top-24 left-[10%] right-[10%] h-0.5">
-                  <div className="h-full bg-gradient-to-r from-dark-600 via-gold-500/50 to-dark-600 rounded-full" />
-                </div>
+                <div className="hidden lg:block absolute top-20 left-[12%] right-[12%] h-0.5 bg-gradient-to-r from-accent-primary/20 via-accent-primary to-accent-primary/20 rounded-full" />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
                   {steps.map((step, index) => (
                     <div
                       key={index}
-                      className="relative animate-fade-in-up text-center"
-                      style={{ animationDelay: `${index * 150}ms` }}
+                      className={cn(
+                        "relative text-center transition-all duration-700",
+                        stepsReveal.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+                      )}
+                      style={{ transitionDelay: `${index * 150}ms` }}
                     >
                       {/* Step number */}
                       <div className="relative inline-block mb-8">
-                        <div className="w-24 h-24 rounded-full bg-dark-800 border-2 border-gold-500/30 flex items-center justify-center relative z-10 group hover:border-gold-500 transition-colors">
-                          <span className="text-3xl font-bold text-gradient-gold">{step.number}</span>
-
-                          {/* Glow effect on hover */}
-                          <div className="absolute inset-0 rounded-full bg-gold-500/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
+                        <div className="w-20 h-20 rounded-full bg-bg-primary border-2 border-accent-primary/30 flex items-center justify-center relative z-10 group hover:border-accent-primary hover:shadow-glow transition-all duration-300">
+                          <span className="text-2xl font-display font-bold text-accent-primary">{step.number}</span>
                         </div>
 
                         {/* Icon badge */}
-                        <div className="absolute -bottom-3 -right-3 w-12 h-12 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center shadow-lg z-20">
-                          <step.icon className="h-6 w-6 text-dark-900" />
+                        <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-gradient-to-br from-accent-primary to-accent-secondary flex items-center justify-center shadow-lg z-20">
+                          <step.icon className="h-5 w-5 text-text-inverse" />
                         </div>
                       </div>
 
-                      <h3 className="text-xl font-semibold mb-4 text-foreground">{step.title}</h3>
-                      <p className="text-dark-300 leading-relaxed max-w-xs mx-auto">
+                      <h3 className="text-xl font-semibold mb-4 text-text-primary">{step.title}</h3>
+                      <p className="text-text-secondary leading-relaxed max-w-xs mx-auto">
                         {step.description}
                       </p>
                     </div>
@@ -366,20 +444,14 @@ export default function HomePage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-32 relative overflow-hidden">
-          {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gold-600 via-gold-500 to-gold-700" />
+        <section ref={ctaReveal.ref} className="py-24 md:py-32 relative overflow-hidden">
+          {/* Gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-accent-primary via-accent-secondary to-accent-tertiary opacity-90" />
 
-          {/* Pattern overlay */}
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: `radial-gradient(circle at 2px 2px, rgba(0,0,0,0.3) 1px, transparent 0)`,
-              backgroundSize: '32px 32px',
-            }}
-          />
+          {/* Mesh overlay */}
+          <div className="absolute inset-0 mesh-gradient opacity-30" />
 
-          {/* Floating elements - deterministic positions */}
+          {/* Floating elements */}
           {[...Array(8)].map((_, i) => {
             const left = 10 + ((i * 41 + 17) % 80);
             const top = 10 + ((i * 59 + 23) % 80);
@@ -388,7 +460,7 @@ export default function HomePage() {
             return (
               <div
                 key={i}
-                className="absolute w-4 h-4 bg-white/10 rounded-full animate-float"
+                className="absolute w-4 h-4 bg-white/20 rounded-full animate-float pointer-events-none"
                 style={{
                   left: `${left}%`,
                   top: `${top}%`,
@@ -399,17 +471,20 @@ export default function HomePage() {
             );
           })}
 
-          <div className="container mx-auto px-4 text-center relative z-10">
-            <h2 className="text-4xl md:text-6xl font-bold mb-8 text-dark-900 animate-fade-in-up">
+          <div className={cn(
+            "container mx-auto px-4 text-center relative z-10 transition-all duration-700",
+            ctaReveal.isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+          )}>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-white drop-shadow-lg">
               {t("cta.title")}
             </h2>
-            <p className="text-xl md:text-2xl text-dark-800 mb-12 max-w-2xl mx-auto animate-fade-in-up delay-100">
+            <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-2xl mx-auto">
               {t("cta.subtitle")}
             </p>
-            <Link href="/design" className="inline-block animate-fade-in-up delay-200">
+            <Link href="/design" className="inline-block">
               <Button
                 size="lg"
-                className="text-lg px-12 py-6 bg-dark-900 text-gold-400 hover:bg-dark-800 hover:text-gold-300 shadow-2xl group"
+                className="text-lg px-12 bg-white text-accent-primary hover:bg-white/90 shadow-2xl group font-semibold"
               >
                 {t("cta.button")}
                 <ArrowRight className="ml-3 rtl:ml-0 rtl:mr-3 h-5 w-5 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180" />

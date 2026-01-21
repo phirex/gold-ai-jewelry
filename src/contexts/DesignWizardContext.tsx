@@ -28,6 +28,10 @@ export interface WizardState {
   isConverting: boolean;
   conversionProgress: number;
   chatSessionId: string;
+  // New: Image history and favorites
+  imageHistory: string[];
+  currentHistoryIndex: number;
+  favorites: string[];
 }
 
 interface WizardContextType extends WizardState {
@@ -49,8 +53,21 @@ interface WizardContextType extends WizardState {
   setIsConverting: (isConverting: boolean) => void;
   setConversionProgress: (progress: number) => void;
 
+  // Image History & Favorites
+  addToHistory: (imageUrl: string) => void;
+  goBackInHistory: () => void;
+  goForwardInHistory: () => void;
+  goToHistoryIndex: (index: number) => void;
+  toggleFavorite: (imageUrl: string) => void;
+  isFavorite: (imageUrl: string) => boolean;
+  selectFavoriteForReview: (imageUrl: string) => void;
+  clearHistory: () => void;
+
   // Computed
   constructPrompt: () => string;
+  canGoBack: () => boolean;
+  canGoForward: () => boolean;
+  currentHistoryImage: () => string | null;
 
   // Actions
   reset: () => void;
@@ -72,6 +89,10 @@ const initialState: WizardState = {
   isConverting: false,
   conversionProgress: 0,
   chatSessionId: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+  // New: Image history and favorites
+  imageHistory: [],
+  currentHistoryIndex: -1,
+  favorites: [],
 };
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
@@ -135,6 +156,104 @@ export function DesignWizardProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, conversionProgress }));
   }, []);
 
+  // Image History Functions
+  const addToHistory = useCallback((imageUrl: string) => {
+    setState((prev) => {
+      // If we're not at the end of history, truncate forward history
+      const newHistory = prev.currentHistoryIndex < prev.imageHistory.length - 1
+        ? [...prev.imageHistory.slice(0, prev.currentHistoryIndex + 1), imageUrl]
+        : [...prev.imageHistory, imageUrl];
+
+      return {
+        ...prev,
+        imageHistory: newHistory,
+        currentHistoryIndex: newHistory.length - 1,
+        selectedImageUrl: imageUrl,
+      };
+    });
+  }, []);
+
+  const goBackInHistory = useCallback(() => {
+    setState((prev) => {
+      if (prev.currentHistoryIndex <= 0) return prev;
+      const newIndex = prev.currentHistoryIndex - 1;
+      return {
+        ...prev,
+        currentHistoryIndex: newIndex,
+        selectedImageUrl: prev.imageHistory[newIndex],
+      };
+    });
+  }, []);
+
+  const goForwardInHistory = useCallback(() => {
+    setState((prev) => {
+      if (prev.currentHistoryIndex >= prev.imageHistory.length - 1) return prev;
+      const newIndex = prev.currentHistoryIndex + 1;
+      return {
+        ...prev,
+        currentHistoryIndex: newIndex,
+        selectedImageUrl: prev.imageHistory[newIndex],
+      };
+    });
+  }, []);
+
+  const goToHistoryIndex = useCallback((index: number) => {
+    setState((prev) => {
+      if (index < 0 || index >= prev.imageHistory.length) return prev;
+      return {
+        ...prev,
+        currentHistoryIndex: index,
+        selectedImageUrl: prev.imageHistory[index],
+      };
+    });
+  }, []);
+
+  const toggleFavorite = useCallback((imageUrl: string) => {
+    setState((prev) => {
+      const isFav = prev.favorites.includes(imageUrl);
+      return {
+        ...prev,
+        favorites: isFav
+          ? prev.favorites.filter((url) => url !== imageUrl)
+          : [...prev.favorites, imageUrl],
+      };
+    });
+  }, []);
+
+  const isFavorite = useCallback((imageUrl: string) => {
+    return state.favorites.includes(imageUrl);
+  }, [state.favorites]);
+
+  const selectFavoriteForReview = useCallback((imageUrl: string) => {
+    setState((prev) => ({
+      ...prev,
+      selectedImageUrl: imageUrl,
+    }));
+  }, []);
+
+  const clearHistory = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      imageHistory: [],
+      currentHistoryIndex: -1,
+    }));
+  }, []);
+
+  const canGoBack = useCallback(() => {
+    return state.currentHistoryIndex > 0;
+  }, [state.currentHistoryIndex]);
+
+  const canGoForward = useCallback(() => {
+    return state.currentHistoryIndex < state.imageHistory.length - 1;
+  }, [state.currentHistoryIndex, state.imageHistory.length]);
+
+  const currentHistoryImage = useCallback(() => {
+    if (state.currentHistoryIndex >= 0 && state.currentHistoryIndex < state.imageHistory.length) {
+      return state.imageHistory[state.currentHistoryIndex];
+    }
+    return null;
+  }, [state.currentHistoryIndex, state.imageHistory]);
+
   const constructPrompt = useCallback(() => {
     const { gender, jewelryType, description, material } = state;
     if (!gender || !jewelryType) return "";
@@ -179,7 +298,7 @@ export function DesignWizardProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const canProceed = useCallback(() => {
-    const { step, gender, jewelryType, description, selectedImageUrl, modelUrl } = state;
+    const { step, gender, jewelryType, description, selectedImageUrl, modelUrl, favorites } = state;
 
     switch (step) {
       case 1:
@@ -191,7 +310,8 @@ export function DesignWizardProvider({ children }: { children: ReactNode }) {
       case 4:
         return selectedImageUrl !== null;
       case 5:
-        return true; // Refinement step - can always proceed
+        // Refinement step - can proceed if there's a selected image or favorites
+        return selectedImageUrl !== null || favorites.length > 0;
       case 6:
         return modelUrl !== null;
       default:
@@ -215,6 +335,19 @@ export function DesignWizardProvider({ children }: { children: ReactNode }) {
     setIsGenerating,
     setIsConverting,
     setConversionProgress,
+    // Image History & Favorites
+    addToHistory,
+    goBackInHistory,
+    goForwardInHistory,
+    goToHistoryIndex,
+    toggleFavorite,
+    isFavorite,
+    selectFavoriteForReview,
+    clearHistory,
+    canGoBack,
+    canGoForward,
+    currentHistoryImage,
+    // Computed & Actions
     constructPrompt,
     reset,
     canProceed,

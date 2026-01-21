@@ -1,21 +1,11 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { Geist, Geist_Mono } from "next/font/google";
 import { locales, localeDirections, type Locale } from "@/lib/i18n/config";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { CartProvider } from "@/contexts/CartContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -39,7 +29,7 @@ export default async function LocaleLayout({
   const direction = localeDirections[locale as Locale];
 
   return (
-    <html lang={locale} dir={direction}>
+    <html lang={locale} dir={direction} className="theme-warm">
       <head>
         {/* Hebrew font for RTL support */}
         {locale === "he" && (
@@ -49,17 +39,17 @@ export default async function LocaleLayout({
           />
         )}
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background text-foreground`}
-      >
-        <AuthProvider>
-          <NextIntlClientProvider messages={messages}>
-            <CartProvider>
-              {children}
-              <CartDrawer />
-            </CartProvider>
-          </NextIntlClientProvider>
-        </AuthProvider>
+      <body className="antialiased min-h-screen bg-bg-primary text-text-primary">
+        <ThemeProvider>
+          <AuthProvider>
+            <NextIntlClientProvider messages={messages}>
+              <CartProvider>
+                {children}
+                <CartDrawer />
+              </CartProvider>
+            </NextIntlClientProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

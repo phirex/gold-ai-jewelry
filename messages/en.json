@@ -13,7 +13,7 @@
     "close": "Close",
     "viewAll": "View All",
     "learnMore": "Learn More",
-    "startDesigning": "Start Designing"
+    "startDesigning": "Create Your Design Free"
   },
   "nav": {
     "home": "Home",
@@ -32,47 +32,55 @@
   },
   "home": {
     "hero": {
-      "title": "Design Your Dream Jewelry with AI",
-      "subtitle": "Create unique, custom-made jewelry pieces using artificial intelligence. From concept to reality in minutes.",
-      "cta": "Start Designing",
-      "secondary": "How It Works"
+      "title": "Turn Your Vision Into One-of-a-Kind Jewelry",
+      "subtitle": "Describe what you imagine. Watch it come to life in 3D. Have master jewelers craft it just for you.",
+      "cta": "Create Your Design Free",
+      "secondary": "See How It Works",
+      "trustBadges": {
+        "secureCheckout": "Secure Checkout",
+        "fastDelivery": "Fast Delivery",
+        "madeWithLove": "Made with Love",
+        "qualityGuaranteed": "Quality Guaranteed"
+      }
     },
     "features": {
-      "title": "Why Choose Us",
+      "title": "Why Thousands Trust Us",
+      "subtitle": "Experience the future of jewelry design with our AI-powered platform",
       "ai": {
-        "title": "AI-Powered Design",
-        "description": "Describe your vision and watch AI bring it to life in stunning 3D"
+        "title": "Your Ideas, Instantly Visualized",
+        "description": "Describe your vision in plain words. Watch AI transform it into stunning 3D designs."
       },
       "preview": {
-        "title": "Real-Time 3D Preview",
-        "description": "See your jewelry from every angle before committing"
+        "title": "See Every Angle Before You Commit",
+        "description": "Rotate, zoom, and explore every detail in real-time 3D before you decide."
       },
       "pricing": {
-        "title": "Transparent Pricing",
-        "description": "Know the exact cost based on materials and craftsmanship"
+        "title": "Know Your Price Upfront",
+        "description": "No surprises. See exact pricing based on materials and craftsmanship instantly."
       },
       "quality": {
-        "title": "Expert Craftsmanship",
-        "description": "Handcrafted by master jewelers using premium materials"
+        "title": "Handcrafted by Master Jewelers",
+        "description": "Your design, brought to life by expert artisans using only premium materials."
       }
     },
     "howItWorks": {
-      "title": "How It Works",
+      "title": "From Idea to Your Hand in 4 Steps",
+      "subtitle": "From your imagination to a stunning piece of jewelry in four simple steps",
       "step1": {
-        "title": "Describe Your Vision",
-        "description": "Tell us what you're looking for - style, occasion, preferences"
+        "title": "Share Your Vision",
+        "description": "Tell us what you want - the style, occasion, or feeling you're after."
       },
       "step2": {
-        "title": "AI Creates Designs",
-        "description": "Our AI generates unique 3D jewelry designs based on your input"
+        "title": "Watch AI Create",
+        "description": "Our AI generates unique 3D jewelry designs based on your description."
       },
       "step3": {
-        "title": "Refine & Customize",
-        "description": "Chat with AI to perfect your design - adjust size, add stones, change materials"
+        "title": "Perfect Your Design",
+        "description": "Chat with AI to refine details - adjust size, add stones, tweak the style."
       },
       "step4": {
-        "title": "We Craft It",
-        "description": "Master jewelers handcraft your unique piece with premium materials"
+        "title": "We Craft It For You",
+        "description": "Master jewelers handcraft your unique piece with premium materials."
       }
     },
     "stats": {
@@ -83,9 +91,9 @@
     },
     "preview3d": "3D Preview Coming Soon",
     "cta": {
-      "title": "Ready to Create Something Unique?",
-      "subtitle": "Start designing your custom jewelry today",
-      "button": "Start Free Design"
+      "title": "Ready to Bring Your Vision to Life?",
+      "subtitle": "Join thousands who've created their dream jewelry",
+      "button": "Start Your Free Design"
     }
   },
   "design": {
@@ -106,31 +114,31 @@
       }
     },
     "wizard": {
-      "title": "Let's Design Your Perfect Piece",
+      "title": "Let's Create Your Perfect Piece",
       "back": "Back",
       "next": "Next",
       "startDesigning": "Start Designing",
-      "generateDesigns": "Generate Designs",
-      "convertTo3D": "Convert to 3D",
+      "generateDesigns": "Generate My Designs",
+      "convertTo3D": "See It in 3D",
       "stepOf": "Step {current} of {total}",
       "steps": {
-        "gender": "For Who",
-        "type": "Jewelry Type",
+        "gender": "Who",
+        "type": "Type",
         "description": "Describe",
         "select": "Select",
         "refine": "Refine",
         "review": "Review"
       },
       "step1": {
-        "title": "Who is this for?",
-        "subtitle": "Help us understand who will wear this beautiful piece",
+        "title": "Who will wear this masterpiece?",
+        "subtitle": "Every great piece starts with who will wear it",
         "man": "Man",
         "woman": "Woman",
         "unisex": "Unisex"
       },
       "step2": {
-        "title": "What would you like to create?",
-        "subtitle": "Choose the type of jewelry",
+        "title": "What are you creating?",
+        "subtitle": "Choose your jewelry type",
         "ring": "Ring",
         "necklace": "Necklace",
         "bracelet": "Bracelet",
@@ -147,9 +155,9 @@
       },
       "description": {
         "title": "Describe Your Dream {type}",
-        "subtitle": "Tell us about your perfect piece",
+        "subtitle": "The more detail you share, the better we can create it",
         "placeholder": "Describe your dream {type}... (e.g., elegant design with diamonds, delicate patterns, modern style)",
-        "hint": "Be as detailed as you like - mention stones, patterns, thickness, style, or any inspiration you have",
+        "hint": "Mention stones, patterns, thickness, style, or any inspiration you have",
         "charCount": "{count}/{max}",
         "examples": {
           "title": "Try these for inspiration",
@@ -180,15 +188,15 @@
         }
       },
       "select": {
-        "title": "Choose Your Design",
+        "title": "Pick Your Favorite",
         "subtitle": "Select the design that speaks to you",
-        "generating": "Creating your designs...",
+        "generating": "Creating your unique designs...",
         "selectOne": "Click an image to select it",
         "regenerate": "Generate New Options"
       },
       "refine": {
-        "title": "Refine Your Design",
-        "subtitle": "Chat with our AI to perfect your design",
+        "title": "Perfect Your Design",
+        "subtitle": "Chat with AI to make it exactly how you want it",
         "chatPlaceholder": "Describe changes you'd like...",
         "estimatedPrice": "Estimated Price",
         "priceNote": "Final price may vary based on materials",
@@ -197,15 +205,15 @@
         "imageUpdated": "Your design has been updated!"
       },
       "review": {
-        "title": "Review Your Design",
-        "subtitle": "Your custom jewelry is ready",
+        "title": "Your Design is Ready",
+        "subtitle": "Review your custom jewelry before checkout",
         "converting": "Converting to 3D model...",
         "conversionProgress": "{progress}% complete",
         "referenceImage": "Your Design",
         "model3d": "3D Preview",
         "noImage": "No image selected",
         "waitingForConversion": "Waiting for 3D conversion",
-        "proceedToCheckout": "Proceed to Checkout"
+        "proceedToCheckout": "Complete My Order"
       }
     },
     "studio": {
@@ -290,16 +298,16 @@
   },
   "cart": {
     "title": "Your Cart",
-    "empty": "Your cart is empty",
-    "emptySubtitle": "Start designing your perfect jewelry piece",
-    "startDesigning": "Start Designing",
+    "empty": "Your jewelry collection awaits",
+    "emptySubtitle": "Start designing your perfect piece",
+    "startDesigning": "Create Your First Design",
     "item": "Item",
     "quantity": "Qty",
     "price": "Price",
     "remove": "Remove",
     "subtotal": "Subtotal",
     "shipping": "Shipping",
-    "shippingNote": "Shipping calculated at checkout",
+    "shippingNote": "Calculated at checkout",
     "tax": "Tax",
     "total": "Total",
     "checkout": "Proceed to Checkout",
@@ -326,7 +334,7 @@
     "summary": {
       "title": "Order Summary"
     },
-    "placeOrder": "Place Order",
+    "placeOrder": "Complete My Order",
     "processing": "Processing...",
     "orderConfirmed": "Order Confirmed!",
     "thankYou": "Thank you for your order. You will receive a confirmation email shortly.",
@@ -398,7 +406,7 @@
     "privacy": "Privacy Policy",
     "shipping": "Shipping & Returns",
     "copyright": "© {year} Gold AI. All rights reserved.",
-    "description": "Create unique, custom-made jewelry pieces using artificial intelligence. From concept to reality in minutes.",
+    "description": "Turn your jewelry vision into reality. Describe, design, and have master jewelers create your one-of-a-kind piece.",
     "company": "Company",
     "legal": "Legal",
     "socialFacebook": "Facebook",

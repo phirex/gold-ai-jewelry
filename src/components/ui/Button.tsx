@@ -26,21 +26,21 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const t = useTranslations("common");
 
     const baseStyles =
-      "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-dark-900 disabled:pointer-events-none disabled:opacity-50";
+      "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary disabled:pointer-events-none disabled:opacity-50 press-effect";
 
     const variants = {
       primary:
-        "bg-gold-500 text-dark-900 hover:bg-gold-400 shadow-lg shadow-gold-500/20 hover:shadow-gold-400/30 hover:shadow-xl",
+        "bg-accent-primary text-text-inverse hover:opacity-90 shadow-md hover:shadow-lg",
       secondary:
-        "bg-dark-700 text-dark-100 hover:bg-dark-600 border border-dark-600 hover:border-dark-500",
+        "bg-bg-tertiary text-text-primary hover:bg-bg-accent border border-border hover:border-accent-tertiary",
       outline:
-        "border border-gold-500/50 text-gold-400 hover:bg-gold-500/10 hover:border-gold-400",
+        "border-2 border-accent-primary text-accent-primary hover:bg-accent-primary/10",
       ghost:
-        "text-dark-200 hover:text-gold-400 hover:bg-dark-800",
+        "text-text-secondary hover:text-accent-primary hover:bg-bg-secondary",
       link:
-        "text-gold-400 underline-offset-4 hover:underline hover:text-gold-300",
+        "text-accent-primary underline-offset-4 hover:underline hover:opacity-80",
       gradient:
-        "bg-gradient-to-r from-gold-500 via-gold-400 to-gold-500 bg-[length:200%_100%] text-dark-900 font-bold shadow-lg shadow-gold-500/25 hover:shadow-gold-400/40 hover:shadow-xl hover:bg-[position:100%_0] transition-all duration-500",
+        "bg-gradient-to-r from-gold-500 via-gold-400 to-gold-500 bg-[length:200%_100%] text-text-inverse font-bold shadow-lg shadow-accent hover:shadow-xl hover:bg-[position:100%_0] transition-all duration-500",
     };
 
     const sizes = {
@@ -59,7 +59,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         {isLoading ? (
           <>
             <svg
-              className="mr-2 h-4 w-4 animate-spin"
+              className="mr-2 rtl:mr-0 rtl:ml-2 h-4 w-4 animate-spin"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"

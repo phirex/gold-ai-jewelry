@@ -64,10 +64,10 @@ export function ImageSelectionStep() {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl md:text-3xl font-bold text-gradient-gold-bright">
+        <h2 className="font-display text-2xl md:text-3xl font-bold text-gradient">
           {t("title")}
         </h2>
-        <p className="text-dark-400">{t("subtitle")}</p>
+        <p className="text-text-secondary">{t("subtitle")}</p>
       </div>
 
       <div className="max-w-2xl mx-auto space-y-6">
@@ -84,12 +84,12 @@ export function ImageSelectionStep() {
                 disabled={!imageUrl || isGenerating}
                 className={cn(
                   "relative aspect-square rounded-2xl overflow-hidden border-2 transition-all",
-                  "bg-dark-800",
+                  "bg-bg-secondary shadow-medium",
                   imageUrl && selectedImageUrl === imageUrl
-                    ? "border-gold-500 ring-4 ring-gold-500/20 shadow-lg shadow-gold-500/20"
+                    ? "border-accent-primary ring-4 ring-accent-primary/20 shadow-lg shadow-accent/20"
                     : imageUrl
-                    ? "border-dark-700 hover:border-gold-500/50"
-                    : "border-dark-700",
+                    ? "border-border hover:border-accent-primary/50"
+                    : "border-border",
                   "animate-fade-in-up"
                 )}
                 style={{ animationDelay: `${index * 100}ms` }}
@@ -102,8 +102,8 @@ export function ImageSelectionStep() {
                       className="w-full h-full object-cover"
                     />
                     {selectedImageUrl === imageUrl && (
-                      <div className="absolute top-3 right-3 w-8 h-8 bg-gold-500 rounded-full flex items-center justify-center animate-scale-in">
-                        <Check className="w-5 h-5 text-dark-900" />
+                      <div className="absolute top-3 right-3 w-8 h-8 bg-accent-primary rounded-full flex items-center justify-center animate-scale-in shadow-lg">
+                        <Check className="w-5 h-5 text-text-inverse" />
                       </div>
                     )}
                   </>
@@ -112,13 +112,13 @@ export function ImageSelectionStep() {
                     {isLoading ? (
                       <>
                         <div className="relative">
-                          <div className="absolute inset-0 bg-gold-500/20 rounded-full blur-lg animate-pulse" />
-                          <Loader2 className="w-8 h-8 text-gold-400 animate-spin relative" />
+                          <div className="absolute inset-0 bg-accent-primary/20 rounded-full blur-lg animate-pulse" />
+                          <Loader2 className="w-8 h-8 text-accent-primary animate-spin relative" />
                         </div>
-                        <span className="text-xs text-dark-500">{t("generating")}</span>
+                        <span className="text-xs text-text-tertiary">{t("generating")}</span>
                       </>
                     ) : (
-                      <span className="text-dark-600 text-sm">#{index + 1}</span>
+                      <span className="text-text-tertiary text-sm">#{index + 1}</span>
                     )}
                   </div>
                 )}
@@ -129,7 +129,7 @@ export function ImageSelectionStep() {
 
         {/* Selection hint */}
         {variations.length > 0 && !selectedImageUrl && !isGenerating && (
-          <p className="text-center text-dark-400 text-sm animate-pulse">
+          <p className="text-center text-text-secondary text-sm animate-pulse">
             {t("selectOne")}
           </p>
         )}

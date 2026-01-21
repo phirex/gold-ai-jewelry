@@ -47,10 +47,10 @@ export function DescriptionStep() {
   return (
     <div className="space-y-8 animate-fade-in-up">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl md:text-3xl font-bold text-gradient-gold-bright">
+        <h2 className="font-display text-2xl md:text-3xl font-bold text-gradient">
           {t("title", { type: typeLabel })}
         </h2>
-        <p className="text-dark-400">{t("subtitle")}</p>
+        <p className="text-text-secondary">{t("subtitle")}</p>
       </div>
 
       <div className="max-w-2xl mx-auto space-y-6">
@@ -62,11 +62,11 @@ export function DescriptionStep() {
             placeholder={t("placeholder", { type: typeLabel.toLowerCase() })}
             className={cn(
               "w-full min-h-[180px] p-5 rounded-2xl border-2 transition-all resize-none",
-              "bg-dark-800 text-dark-100 placeholder:text-dark-500",
-              "focus:outline-none focus:border-gold-500/50 focus:ring-2 focus:ring-gold-500/20",
+              "bg-bg-secondary text-text-primary placeholder:text-text-tertiary",
+              "focus:outline-none focus:border-accent-primary/50 focus:ring-2 focus:ring-accent-primary/20",
               description.length >= 10
-                ? "border-gold-500/30"
-                : "border-dark-700"
+                ? "border-accent-primary/30"
+                : "border-border"
             )}
           />
 
@@ -76,10 +76,10 @@ export function DescriptionStep() {
               className={cn(
                 "text-sm transition-colors",
                 charCount >= maxLength
-                  ? "text-red-400"
+                  ? "text-red-500"
                   : charCount >= 10
-                  ? "text-gold-400"
-                  : "text-dark-500"
+                  ? "text-accent-primary"
+                  : "text-text-tertiary"
               )}
             >
               {t("charCount", { count: charCount, max: maxLength })}
@@ -88,16 +88,16 @@ export function DescriptionStep() {
         </div>
 
         {/* Hint */}
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-dark-800/50 border border-dark-700">
-          <Lightbulb className="w-5 h-5 text-gold-400 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-dark-400">{t("hint")}</p>
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-bg-secondary/50 border border-border">
+          <Lightbulb className="w-5 h-5 text-accent-primary flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-text-secondary">{t("hint")}</p>
         </div>
 
         {/* Example prompts */}
         {examples.length > 0 && (
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-dark-400">
-              <Sparkles className="w-4 h-4 text-gold-400" />
+            <div className="flex items-center gap-2 text-sm text-text-secondary">
+              <Sparkles className="w-4 h-4 text-accent-primary" />
               <span>{t("examples.title")}</span>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -107,8 +107,8 @@ export function DescriptionStep() {
                   onClick={() => setDescription(example)}
                   className={cn(
                     "px-4 py-2 text-sm rounded-xl border transition-all",
-                    "bg-dark-800 border-dark-700 text-dark-300",
-                    "hover:border-gold-500/50 hover:text-gold-400 hover:bg-dark-750",
+                    "bg-bg-secondary border-border text-text-secondary",
+                    "hover:border-accent-primary/50 hover:text-accent-primary hover:bg-bg-tertiary",
                     "animate-fade-in-up"
                   )}
                   style={{ animationDelay: `${index * 50}ms` }}

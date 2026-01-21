@@ -3,7 +3,17 @@
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { Loader2, ShoppingCart, Save, RotateCcw, Image as ImageIcon, Box, ArrowRight } from "lucide-react";
+import {
+  Loader2,
+  ShoppingCart,
+  Save,
+  RotateCcw,
+  Image as ImageIcon,
+  Box,
+  ArrowRight,
+  Heart,
+  Check,
+} from "lucide-react";
 import { useDesignWizard } from "@/contexts/DesignWizardContext";
 import { useCart } from "@/contexts/CartContext";
 import { ModelViewer } from "@/components/design/ModelViewer";
@@ -21,6 +31,7 @@ export function FinalReviewStep() {
 
   const {
     selectedImageUrl,
+    setSelectedImageUrl,
     modelUrl,
     setModelUrl,
     isConverting,
@@ -35,13 +46,17 @@ export function FinalReviewStep() {
     gender,
     description,
     reset,
+    favorites,
+    selectFavoriteForReview,
   } = useDesignWizard();
 
   const [taskId, setTaskId] = useState<string | null>(null);
+  const [selectedForConversion, setSelectedForConversion] = useState<string | null>(null);
 
-  // Start 3D conversion on mount
+  // Start 3D conversion when an image is selected
   useEffect(() => {
     if (selectedImageUrl && !modelUrl && !isConverting && !taskId) {
+      setSelectedForConversion(selectedImageUrl);
       startConversion();
     }
   }, [selectedImageUrl]);
@@ -80,6 +95,8 @@ export function FinalReviewStep() {
 
     setIsConverting(true);
     setConversionProgress(0);
+    setModelUrl(null);
+    setTaskId(null);
 
     try {
       const response = await fetch("/api/designs/convert-to-3d", {
@@ -98,10 +115,18 @@ export function FinalReviewStep() {
     }
   };
 
+  const handleSelectFavorite = (url: string) => {
+    if (url !== selectedImageUrl) {
+      selectFavoriteForReview(url);
+      setModelUrl(null);
+      setTaskId(null);
+      setSelectedForConversion(url);
+    }
+  };
+
   const handleMaterialChange = (newMaterial: typeof material) => {
     setMaterial(newMaterial);
 
-    // Update price based on material
     if (priceBreakdown) {
       const materialMultipliers: Record<string, number> = {
         gold_14k: 0.8,
@@ -135,7 +160,6 @@ export function FinalReviewStep() {
       price: priceBreakdown.total,
     });
 
-    // Navigate directly to checkout
     router.push(`/${locale}/checkout`);
   };
 
@@ -146,20 +170,59 @@ export function FinalReviewStep() {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl md:text-3xl font-bold text-gradient-gold-bright">
+        <h2 className="font-display text-2xl md:text-3xl font-bold text-gradient">
           {t("title")}
         </h2>
-        <p className="text-dark-400">{t("subtitle")}</p>
+        <p className="text-text-secondary">{t("subtitle")}</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Favorites Gallery - Show if there are favorites */}
+      {favorites.length > 0 && (
+        <div className="glass-card rounded-2xl p-5 max-w-4xl mx-auto">
+          <div className="flex items-center gap-2 mb-4">
+            <Heart className="w-5 h-5 text-accent-secondary" />
+            <h3 className="font-semibold text-text-primary">Choose Your Final Design</h3>
+            <span className="text-sm text-text-tertiary">({favorites.length} favorites)</span>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
+            {favorites.map((url, index) => (
+              <button
+                key={index}
+                onClick={() => handleSelectFavorite(url)}
+                className={cn(
+                  "relative aspect-square rounded-xl overflow-hidden transition-all duration-200",
+                  "hover:scale-105 hover:shadow-lg",
+                  url === selectedImageUrl
+                    ? "ring-3 ring-accent-primary ring-offset-2 ring-offset-bg-primary shadow-glow"
+                    : "opacity-70 hover:opacity-100"
+                )}
+              >
+                <img
+                  src={url}
+                  alt={`Favorite design ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+                {url === selectedImageUrl && (
+                  <div className="absolute inset-0 bg-accent-primary/20 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-full bg-accent-primary flex items-center justify-center">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
         {/* Left: 2D Reference Image */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-dark-400">
-            <ImageIcon className="w-4 h-4 text-gold-400" />
+          <div className="flex items-center gap-2 text-sm text-text-secondary">
+            <ImageIcon className="w-4 h-4 text-accent-primary" />
             <span>{t("referenceImage")}</span>
           </div>
-          <div className="aspect-square rounded-2xl overflow-hidden border border-dark-700 bg-dark-800">
+          <div className="aspect-square rounded-2xl overflow-hidden border border-border bg-bg-secondary shadow-medium">
             {selectedImageUrl ? (
               <img
                 src={selectedImageUrl}
@@ -167,7 +230,7 @@ export function FinalReviewStep() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-dark-500">
+              <div className="w-full h-full flex items-center justify-center text-text-tertiary">
                 {t("noImage")}
               </div>
             )}
@@ -176,29 +239,29 @@ export function FinalReviewStep() {
 
         {/* Right: 3D Model */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-sm text-dark-400">
-            <Box className="w-4 h-4 text-gold-400" />
+          <div className="flex items-center gap-2 text-sm text-text-secondary">
+            <Box className="w-4 h-4 text-accent-primary" />
             <span>{t("model3d")}</span>
           </div>
-          <div className="aspect-square rounded-2xl overflow-hidden border border-dark-700 bg-dark-800">
+          <div className="aspect-square rounded-2xl overflow-hidden border border-border bg-bg-secondary shadow-medium">
             {isConverting ? (
-              <div className="w-full h-full flex flex-col items-center justify-center gap-4">
+              <div className="w-full h-full flex flex-col items-center justify-center gap-4 bg-bg-secondary">
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gold-500/20 rounded-full blur-xl animate-pulse" />
-                  <Loader2 className="w-12 h-12 text-gold-400 animate-spin relative" />
+                  <div className="absolute inset-0 bg-accent-primary/20 rounded-full blur-xl animate-pulse" />
+                  <Loader2 className="w-12 h-12 text-accent-primary animate-spin relative" />
                 </div>
                 <div className="text-center">
-                  <p className="text-dark-300">{t("converting")}</p>
+                  <p className="text-text-secondary">{t("converting")}</p>
                   {conversionProgress > 0 && (
-                    <p className="text-sm text-gold-400 mt-1">
+                    <p className="text-sm text-accent-primary mt-1">
                       {t("conversionProgress", { progress: conversionProgress })}
                     </p>
                   )}
                 </div>
                 {/* Progress bar */}
-                <div className="w-48 h-2 bg-dark-700 rounded-full overflow-hidden">
+                <div className="w-48 h-2 bg-bg-tertiary rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-gold-500 to-gold-400 transition-all duration-300"
+                    className="h-full bg-gradient-to-r from-accent-primary to-accent-secondary transition-all duration-300"
                     style={{ width: `${conversionProgress}%` }}
                   />
                 </div>
@@ -210,7 +273,7 @@ export function FinalReviewStep() {
                 className="w-full h-full"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-dark-500">
+              <div className="w-full h-full flex items-center justify-center text-text-tertiary">
                 {t("waitingForConversion")}
               </div>
             )}
@@ -219,19 +282,19 @@ export function FinalReviewStep() {
       </div>
 
       {/* Bottom: Material, Price, Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-4xl mx-auto">
         {/* Material Selector */}
-        <div className="bg-dark-800 rounded-2xl p-5 border border-dark-700">
+        <div className="glass-card rounded-2xl p-5">
           <MaterialSelector value={material} onChange={handleMaterialChange} />
         </div>
 
         {/* Price Display */}
-        <div className="bg-dark-800 rounded-2xl p-5 border border-dark-700">
+        <div className="glass-card rounded-2xl p-5">
           <PriceDisplay breakdown={priceBreakdown} isLoading={false} />
         </div>
 
         {/* Actions */}
-        <div className="bg-dark-800 rounded-2xl p-5 border border-dark-700 space-y-3">
+        <div className="glass-card rounded-2xl p-5 space-y-3">
           <Button
             variant="gradient"
             className="w-full gap-2"
