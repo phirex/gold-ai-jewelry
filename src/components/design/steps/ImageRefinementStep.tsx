@@ -232,7 +232,7 @@ export function ImageRefinementStep() {
                     )}
                     title="Go back"
                   >
-                    <ChevronLeft className="w-5 h-5" />
+                    <ChevronLeft className="w-5 h-5 rtl:rotate-180" />
                   </button>
                   <span className="text-white/80 text-sm font-medium px-2">
                     {currentHistoryIndex + 1} / {imageHistory.length}
@@ -248,7 +248,7 @@ export function ImageRefinementStep() {
                     )}
                     title="Go forward"
                   >
-                    <ChevronRight className="w-5 h-5" />
+                    <ChevronRight className="w-5 h-5 rtl:rotate-180" />
                   </button>
                 </div>
 

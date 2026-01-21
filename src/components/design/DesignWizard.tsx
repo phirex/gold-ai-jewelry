@@ -78,7 +78,7 @@ function WizardContent() {
   return (
     <div className="max-w-4xl mx-auto">
       {/* Progress indicator */}
-      <div className="mb-10">
+      <div className="mb-6">
         {/* Step labels (desktop) */}
         <div className="hidden md:flex items-center justify-between mb-4 px-2">
           {stepLabels.map((label, index) => (
@@ -154,11 +154,11 @@ function WizardContent() {
       </div>
 
       {/* Step Content */}
-      <div className="min-h-[400px]">{renderStep()}</div>
+      <div className="min-h-[280px]">{renderStep()}</div>
 
       {/* Navigation buttons */}
       {step < 6 && (
-        <div className="flex justify-between mt-10 pt-6 border-t border-border">
+        <div className="flex justify-between mt-6 pt-4 border-t border-border">
           <Button
             variant="ghost"
             onClick={prevStep}

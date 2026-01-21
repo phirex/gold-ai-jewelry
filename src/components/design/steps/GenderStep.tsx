@@ -16,7 +16,7 @@ export function GenderStep() {
   const { gender, setGender } = useDesignWizard();
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-4 animate-fade-in-up">
       <div className="text-center space-y-2">
         <h2 className="font-display text-2xl md:text-3xl font-bold text-gradient">
           {t("title")}
@@ -34,8 +34,8 @@ export function GenderStep() {
               key={option.value}
               onClick={() => setGender(option.value)}
               className={cn(
-                "relative p-6 rounded-2xl border-2 transition-all duration-300 group",
-                "flex flex-col items-center gap-4",
+                "relative p-4 rounded-2xl border-2 transition-all duration-300 group",
+                "flex flex-col items-center gap-3",
                 "animate-fade-in-up hover-lift",
                 isSelected
                   ? "border-accent-primary bg-accent-primary/10 shadow-lg shadow-accent/20"
@@ -53,7 +53,7 @@ export function GenderStep() {
               {/* Icon */}
               <div
                 className={cn(
-                  "w-16 h-16 rounded-2xl flex items-center justify-center transition-all",
+                  "w-14 h-14 rounded-xl flex items-center justify-center transition-all",
                   isSelected
                     ? "bg-gradient-to-br from-accent-primary to-accent-secondary shadow-lg shadow-accent/30"
                     : "bg-bg-tertiary group-hover:bg-bg-accent"
