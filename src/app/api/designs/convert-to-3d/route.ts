@@ -48,8 +48,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const errorMessage = error instanceof Error ? error.message : "Failed to start 3D conversion";
     return NextResponse.json(
-      { error: "Failed to start 3D conversion" },
+      { error: errorMessage },
       { status: 500 }
     );
   }

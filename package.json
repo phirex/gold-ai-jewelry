@@ -16,6 +16,7 @@
     "@auth/prisma-adapter": "^2.11.1",
     "@google/model-viewer": "^4.1.0",
     "@prisma/client": "^6.19.2",
+    "@supabase/supabase-js": "^2.91.0",
     "@types/three": "^0.172.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.562.0",

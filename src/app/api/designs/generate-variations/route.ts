@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getFluxClient, JewelryImageContext } from "@/lib/ai/flux";
+import { getNanoBananaClient, JewelryImageContext } from "@/lib/ai/nano-banana";
+import { uploadImageFromUrl, isStorageConfigured } from "@/lib/storage/supabase";
 
 const requestSchema = z.object({
   prompt: z.string().min(10),
@@ -23,10 +24,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = requestSchema.parse(body);
 
-    const fluxClient = getFluxClient();
+    const nanoBananaClient = getNanoBananaClient();
 
-    // If Flux is not configured, return placeholder images immediately
-    if (!fluxClient.isConfigured()) {
+    // If Nano Banana is not configured, return placeholder images immediately
+    if (!nanoBananaClient.isConfigured()) {
       const placeholderImages = Array(validated.count)
         .fill(null)
         .map((_, i) => getPlaceholderUrl(validated.jewelryType, i));
@@ -53,9 +54,10 @@ export async function POST(request: NextRequest) {
     ];
 
     // Generate images sequentially with delays to avoid rate limiting
-    // Low credit accounts have reduced rate limits (1 burst, 6/min), so we add longer delays
+    // Nano Banana Flash is faster, but we still need some delay for rate limits
     const images: string[] = [];
-    const DELAY_BETWEEN_REQUESTS = 8000; // 8 seconds between requests for rate limit safety
+    const DELAY_BETWEEN_REQUESTS = 3000; // 3 seconds between requests (Flash is faster)
+    const storageEnabled = isStorageConfigured();
 
     for (let i = 0; i < validated.count; i++) {
       const variantPrompt = variationPrompts[i % variationPrompts.length];
@@ -67,22 +69,32 @@ export async function POST(request: NextRequest) {
           await delay(DELAY_BETWEEN_REQUESTS);
         }
 
-        console.log(`Generating image ${i + 1}/${validated.count}...`);
-        const imageUrl = await fluxClient.generateJewelryImage(
+        console.log(`Generating image ${i + 1}/${validated.count} with Nano Banana Flash...`);
+        const replicateUrl = await nanoBananaClient.generateDraft(
           variantPrompt,
           jewelryContext,
           {
             aspectRatio: "1:1",
             outputFormat: "png",
-            outputQuality: 90,
           },
           {
-            maxWaitMs: 25000, // Wait at least 25 seconds before timing out
+            maxWaitMs: 30000, // 30 seconds for Flash
             pollIntervalMs: 2000,
           }
         );
-        console.log(`Image ${i + 1} generated successfully`);
-        images.push(imageUrl);
+        console.log(`Image ${i + 1} generated successfully: ${replicateUrl}`);
+
+        // Upload to Supabase for permanent storage
+        let finalUrl = replicateUrl;
+        if (storageEnabled) {
+          console.log(`Uploading image ${i + 1} to Supabase...`);
+          finalUrl = await uploadImageFromUrl(replicateUrl, {
+            folder: `drafts/${validated.jewelryType}`,
+          });
+          console.log(`Image ${i + 1} uploaded to Supabase: ${finalUrl}`);
+        }
+
+        images.push(finalUrl);
       } catch (error) {
         console.error(`Failed to generate variation ${i}:`, error);
         // Use placeholder as fallback for failed generations

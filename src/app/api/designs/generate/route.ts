@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTripoClient } from "@/lib/ai/tripo3d";
-import { getFluxClient, type JewelryImageContext } from "@/lib/ai/flux";
+import { getNanoBananaClient, type JewelryImageContext } from "@/lib/ai/nano-banana";
+import { getFluxClient } from "@/lib/ai/flux";
 import { setPreviewImage } from "../status/route";
 import { z } from "zod";
 
@@ -22,7 +23,8 @@ export async function POST(request: NextRequest) {
     const validatedData = generateSchema.parse(body);
 
     const tripoClient = getTripoClient();
-    const fluxClient = getFluxClient();
+    const nanoBananaClient = getNanoBananaClient();
+    const fluxClient = getFluxClient(); // Keep as fallback
 
     // Check if API keys are configured
     if (!tripoClient.isConfigured()) {
@@ -41,21 +43,20 @@ export async function POST(request: NextRequest) {
     };
 
     // Check if we should use the new image-to-3D pipeline
-    const useImageTo3D = !validatedData.useTextTo3D && fluxClient.isConfigured();
+    const useImageTo3D = !validatedData.useTextTo3D && nanoBananaClient.isConfigured();
 
     if (useImageTo3D) {
-      // === NEW IMAGE-TO-3D PIPELINE ===
-      // Step 1: Generate photorealistic jewelry image with Flux Pro
+      // === IMAGE-TO-3D PIPELINE WITH NANO BANANA ===
+      // Step 1: Generate photorealistic jewelry image with Nano Banana Flash (fast & cheap)
       console.log("Starting image-to-3D pipeline...");
-      console.log("Step 1: Generating jewelry image with Flux Pro...");
+      console.log("Step 1: Generating jewelry image with Nano Banana Flash...");
 
-      const imageUrl = await fluxClient.generateJewelryImage(
+      const imageUrl = await nanoBananaClient.generateDraft(
         validatedData.prompt,
         jewelryContext,
         {
           aspectRatio: "1:1",
           outputFormat: "png",
-          outputQuality: 100,
         }
       );
 
@@ -79,7 +80,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         taskId,
-        message: "Generation started (image-to-3D pipeline)",
+        message: "Generation started (Nano Banana + Tripo3D pipeline)",
         pipeline: "image-to-3d",
         previewImageUrl: imageUrl, // Return the 2D preview image
       });
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
       // === FALLBACK: OLD TEXT-TO-3D PIPELINE ===
       console.log("Using fallback text-to-3D pipeline...");
 
-      if (!fluxClient.isConfigured()) {
+      if (!nanoBananaClient.isConfigured()) {
         console.warn("REPLICATE_API_KEY not configured - using text-to-3D fallback");
       }
 

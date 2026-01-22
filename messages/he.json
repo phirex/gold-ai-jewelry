@@ -413,6 +413,87 @@
     "socialInstagram": "אינסטגרם",
     "socialTwitter": "טוויטר"
   },
+  "studio": {
+    "title": "סטודיו עיצוב",
+    "generate": "צור עיצוב",
+    "generating": "יוצר...",
+    "regenerate": "צור מחדש",
+    "convertTo3D": "המר לתלת-מימד",
+    "addToCart": "הוסף לעגלה",
+    "backToImage": "חזרה לתמונה",
+    "favorite": "מועדף",
+    "favorited": "במועדפים",
+    "tryAgain": "נסה שוב",
+    "estimatedPrice": "מחיר משוער",
+    "tapToRefine": "לחץ לשיפור",
+    "controls": {
+      "gender": "מי יענוד?",
+      "type": "סוג תכשיט",
+      "material": "חומר",
+      "description": "תארו את העיצוב",
+      "descriptionPlaceholder": "תארו את תכשיט החלומות שלכם..."
+    },
+    "tabs": {
+      "controls": "יצירה",
+      "refine": "שיפור"
+    },
+    "emptyState": {
+      "title": "התחילו ליצור",
+      "description": "בחרו אפשרויות ותארו את תכשיט החלומות שלכם ליצירת עיצובים ייחודיים"
+    },
+    "preview": {
+      "model3d": "מודל תלת-מימדי"
+    },
+    "selection": {
+      "title": "בחרו את המועדף עליכם",
+      "subtitle": "לחצו על העיצוב שאתם מעדיפים",
+      "choose": "בחר זה"
+    },
+    "backToOptions": "חזרה לאפשרויות",
+    "history": {
+      "title": "היסטוריה"
+    },
+    "conversion": {
+      "enhancing": "משפר תמונה...",
+      "enhancingDesc": "משתמש במודל Pro לאיכות מירבית",
+      "converting": "ממיר לתלת-מימד...",
+      "complete": "הושלם!",
+      "completeDesc": "המודל התלת-מימדי מוכן",
+      "error": "שגיאה",
+      "errorDesc": "משהו השתבש",
+      "stepEnhance": "שיפור",
+      "step3D": "מודל 3D"
+    },
+    "enhanced": {
+      "title": "איכות Pro מוכנה",
+      "description": "העיצוב שלכם שודרג. מוכנים ליצור מודל תלת-מימדי?",
+      "convertTo3D": "צור מודל 3D"
+    },
+    "chat": {
+      "title": "שיפור AI",
+      "subtitle": "שוחחו לשיפור העיצוב",
+      "placeholder": "תארו שינויים...",
+      "placeholderNoImage": "צרו תמונה תחילה",
+      "emptyStateReady": "תארו שינויים שתרצו לבצע",
+      "emptyStateNoImage": "צרו תמונה כדי להתחיל לשפר",
+      "refining": "משפר...",
+      "refinementComplete": "הנה העיצוב המעודכן שלכם!",
+      "refinementError": "השיפור נכשל. נסו שוב.",
+      "suggestions": {
+        "title": "הצעות מהירות",
+        "thinner": "עשו יותר דק",
+        "addDiamonds": "הוסיפו יהלומים קטנים",
+        "moreDetails": "הוסיפו פרטים",
+        "simpler": "עשו פשוט יותר"
+      }
+    },
+    "regenerateWarning": {
+      "title": "ליצור עיצוב חדש?",
+      "message": "פעולה זו תיצור עיצוב חדש לגמרי. העיצוב הנוכחי יישמר בהיסטוריה. לשיפור העיצוב הנוכחי, השתמשו בצ'אט.",
+      "confirm": "צור חדש",
+      "cancel": "ביטול"
+    }
+  },
   "errors": {
     "required": "שדה זה הוא חובה",
     "invalidEmail": "נא להזין כתובת אימייל תקינה",

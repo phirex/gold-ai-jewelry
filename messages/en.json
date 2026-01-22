@@ -413,6 +413,87 @@
     "socialInstagram": "Instagram",
     "socialTwitter": "Twitter"
   },
+  "studio": {
+    "title": "Design Studio",
+    "generate": "Generate",
+    "generating": "Generating...",
+    "regenerate": "Regenerate",
+    "convertTo3D": "Convert to 3D",
+    "addToCart": "Add to Cart",
+    "backToImage": "Back to Image",
+    "favorite": "Favorite",
+    "favorited": "Favorited",
+    "tryAgain": "Try Again",
+    "estimatedPrice": "Estimated Price",
+    "tapToRefine": "Tap to refine",
+    "controls": {
+      "gender": "Who will wear this?",
+      "type": "Jewelry Type",
+      "material": "Material",
+      "description": "Describe Your Design",
+      "descriptionPlaceholder": "Describe your dream jewelry..."
+    },
+    "tabs": {
+      "controls": "Create",
+      "refine": "Refine"
+    },
+    "emptyState": {
+      "title": "Start Creating",
+      "description": "Select options and describe your dream jewelry to generate unique designs"
+    },
+    "preview": {
+      "model3d": "3D Model"
+    },
+    "selection": {
+      "title": "Choose Your Favorite",
+      "subtitle": "Click on the design you prefer",
+      "choose": "Choose This"
+    },
+    "backToOptions": "Back to Options",
+    "history": {
+      "title": "History"
+    },
+    "conversion": {
+      "enhancing": "Enhancing image...",
+      "enhancingDesc": "Using Pro model for best quality",
+      "converting": "Converting to 3D...",
+      "complete": "Complete!",
+      "completeDesc": "Your 3D model is ready",
+      "error": "Error",
+      "errorDesc": "Something went wrong",
+      "stepEnhance": "Enhance",
+      "step3D": "3D Model"
+    },
+    "enhanced": {
+      "title": "Pro Quality Ready",
+      "description": "Your design has been enhanced. Ready to create a 3D model?",
+      "convertTo3D": "Create 3D Model"
+    },
+    "chat": {
+      "title": "AI Refinement",
+      "subtitle": "Chat to perfect your design",
+      "placeholder": "Describe changes...",
+      "placeholderNoImage": "Generate an image first",
+      "emptyStateReady": "Describe changes you'd like to make",
+      "emptyStateNoImage": "Generate an image to start refining",
+      "refining": "Refining...",
+      "refinementComplete": "Here's your updated design!",
+      "refinementError": "Failed to refine. Please try again.",
+      "suggestions": {
+        "title": "Quick suggestions",
+        "thinner": "Make it thinner",
+        "addDiamonds": "Add small diamonds",
+        "moreDetails": "Add more details",
+        "simpler": "Make it simpler"
+      }
+    },
+    "regenerateWarning": {
+      "title": "Create New Design?",
+      "message": "This will create a completely new design. Your current design will still be in history. To refine your current design, use the chat panel instead.",
+      "confirm": "Create New",
+      "cancel": "Cancel"
+    }
+  },
   "errors": {
     "required": "This field is required",
     "invalidEmail": "Please enter a valid email",
