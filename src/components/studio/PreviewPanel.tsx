@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
@@ -78,6 +78,36 @@ export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
   // Track if user has confirmed their selection (moved from selecting to working)
   const [hasConfirmedSelection, setHasConfirmedSelection] = useState(false);
 
+  // Mobile carousel state
+  const [mobileCarouselIndex, setMobileCarouselIndex] = useState(0);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+
+  // Handle swipe gestures for mobile carousel
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    const threshold = 50; // minimum swipe distance
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0 && mobileCarouselIndex < 1) {
+        // Swipe left - go to next
+        setMobileCarouselIndex(1);
+      } else if (diff < 0 && mobileCarouselIndex > 0) {
+        // Swipe right - go to previous
+        setMobileCarouselIndex(0);
+      }
+    }
+  };
+
   // Helper to convert relative URLs to absolute URLs
   const toAbsoluteUrl = (url: string): string => {
     if (!url) return url;
@@ -105,10 +135,11 @@ export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
 
   const viewPhase = getViewPhase();
 
-  // Reset confirmed selection when new variations are generated
+  // Reset confirmed selection and carousel when new variations are generated
   useEffect(() => {
     if (isGenerating) {
       setHasConfirmedSelection(false);
+      setMobileCarouselIndex(0);
     }
   }, [isGenerating]);
 
@@ -428,53 +459,172 @@ export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
               <p className="text-sm text-text-secondary">{t("selection.subtitle")}</p>
             </div>
 
-            <div className="flex-1 grid grid-cols-2 gap-4">
-              {variations.map((url, index) => (
-                <div
-                  key={index}
-                  className={cn(
-                    "relative rounded-xl overflow-hidden transition-all duration-200",
-                    "bg-bg-tertiary border-2 cursor-pointer",
-                    url ? "hover:border-accent-primary hover:shadow-glow" : "",
-                    !url && "opacity-50 cursor-not-allowed"
-                  )}
-                  onClick={() => url && handleSelectAndConfirm(index as 0 | 1)}
-                >
-                  {url ? (
-                    <>
-                      <img
-                        src={url}
-                        alt={`Option ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                      {/* Favorite button */}
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleFavorite(url);
-                        }}
-                        className={cn(
-                          "absolute top-2 right-2 p-2 rounded-full transition-all cursor-pointer",
-                          isFavorite(url)
-                            ? "bg-accent-secondary text-white"
-                            : "bg-bg-primary/80 text-text-secondary hover:text-accent-secondary"
+            {/* Desktop: Side-by-side grid */}
+            {!isMobile && (
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                {variations.map((url, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      "relative rounded-xl overflow-hidden transition-all duration-200",
+                      "bg-bg-tertiary border-2 cursor-pointer",
+                      url ? "hover:border-accent-primary hover:shadow-glow" : "",
+                      !url && "opacity-50 cursor-not-allowed"
+                    )}
+                    onClick={() => url && handleSelectAndConfirm(index as 0 | 1)}
+                  >
+                    {url ? (
+                      <>
+                        <img
+                          src={url}
+                          alt={`Option ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Favorite button */}
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(url);
+                          }}
+                          className={cn(
+                            "absolute top-2 right-2 p-2 rounded-full transition-all cursor-pointer",
+                            isFavorite(url)
+                              ? "bg-accent-secondary text-white"
+                              : "bg-bg-primary/80 text-text-secondary hover:text-accent-secondary"
+                          )}
+                        >
+                          <Heart className={cn("w-4 h-4", isFavorite(url) && "fill-current")} />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-text-tertiary aspect-square">
+                        {isGenerating ? (
+                          <Loader2 className="w-8 h-8 animate-spin" />
+                        ) : (
+                          <span className="text-sm">-</span>
                         )}
-                      >
-                        <Heart className={cn("w-4 h-4", isFavorite(url) && "fill-current")} />
                       </div>
-                    </>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-text-tertiary aspect-square">
-                      {isGenerating ? (
-                        <Loader2 className="w-8 h-8 animate-spin" />
-                      ) : (
-                        <span className="text-sm">-</span>
-                      )}
-                    </div>
-                  )}
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Mobile: Swipeable carousel */}
+            {isMobile && (
+              <div className="flex-1 flex flex-col">
+                {/* Carousel container */}
+                <div
+                  ref={carouselRef}
+                  className="flex-1 relative overflow-hidden rounded-xl"
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
+                  <div
+                    className="flex h-full transition-transform duration-300 ease-out"
+                    style={{ transform: `translateX(-${mobileCarouselIndex * 100}%)` }}
+                  >
+                    {variations.map((url, index) => (
+                      <div
+                        key={index}
+                        className="w-full h-full flex-shrink-0 relative"
+                        onClick={() => url && handleSelectAndConfirm(index as 0 | 1)}
+                      >
+                        {url ? (
+                          <div className="h-full bg-bg-tertiary rounded-xl overflow-hidden border-2 border-transparent active:border-accent-primary transition-colors">
+                            <img
+                              src={url}
+                              alt={`Option ${index + 1}`}
+                              className="w-full h-full object-contain"
+                            />
+                            {/* Favorite button */}
+                            <div
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(url);
+                              }}
+                              className={cn(
+                                "absolute top-3 right-3 p-2.5 rounded-full transition-all cursor-pointer",
+                                isFavorite(url)
+                                  ? "bg-accent-secondary text-white"
+                                  : "bg-bg-primary/80 text-text-secondary hover:text-accent-secondary"
+                              )}
+                            >
+                              <Heart className={cn("w-5 h-5", isFavorite(url) && "fill-current")} />
+                            </div>
+                            {/* Tap to select indicator */}
+                            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full bg-bg-primary/90 backdrop-blur-sm text-sm font-medium text-text-primary shadow-lg">
+                              {t("selection.tapToSelect")}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-text-tertiary bg-bg-tertiary rounded-xl">
+                            {isGenerating ? (
+                              <Loader2 className="w-10 h-10 animate-spin" />
+                            ) : (
+                              <span className="text-sm">-</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
+
+                {/* Pagination & Navigation */}
+                <div className="flex items-center justify-center gap-4 mt-4">
+                  {/* Left arrow */}
+                  <button
+                    onClick={() => setMobileCarouselIndex(0)}
+                    disabled={mobileCarouselIndex === 0}
+                    className={cn(
+                      "p-2 rounded-full transition-all",
+                      mobileCarouselIndex === 0
+                        ? "text-text-tertiary"
+                        : "text-text-primary bg-bg-tertiary active:bg-bg-accent"
+                    )}
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+
+                  {/* Dots */}
+                  <div className="flex items-center gap-2">
+                    {[0, 1].map((dotIndex) => (
+                      <button
+                        key={dotIndex}
+                        onClick={() => setMobileCarouselIndex(dotIndex)}
+                        className={cn(
+                          "w-2.5 h-2.5 rounded-full transition-all",
+                          mobileCarouselIndex === dotIndex
+                            ? "bg-accent-primary w-6"
+                            : "bg-text-tertiary/30"
+                        )}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Right arrow */}
+                  <button
+                    onClick={() => setMobileCarouselIndex(1)}
+                    disabled={mobileCarouselIndex === 1}
+                    className={cn(
+                      "p-2 rounded-full transition-all",
+                      mobileCarouselIndex === 1
+                        ? "text-text-tertiary"
+                        : "text-text-primary bg-bg-tertiary active:bg-bg-accent"
+                    )}
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Option label */}
+                <p className="text-center text-sm text-text-secondary mt-2">
+                  {t("selection.option")} {mobileCarouselIndex + 1} / 2
+                </p>
+              </div>
+            )}
           </div>
         )}
 

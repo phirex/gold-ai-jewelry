@@ -447,7 +447,9 @@
     "selection": {
       "title": "בחרו את המועדף עליכם",
       "subtitle": "לחצו על העיצוב שאתם מעדיפים",
-      "choose": "בחר זה"
+      "choose": "בחר זה",
+      "tapToSelect": "הקישו לבחירה",
+      "option": "אפשרות"
     },
     "backToOptions": "חזרה לאפשרויות",
     "history": {

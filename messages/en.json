@@ -447,7 +447,9 @@
     "selection": {
       "title": "Choose Your Favorite",
       "subtitle": "Click on the design you prefer",
-      "choose": "Choose This"
+      "choose": "Choose This",
+      "tapToSelect": "Tap to select",
+      "option": "Option"
     },
     "backToOptions": "Back to Options",
     "history": {
