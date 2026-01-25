@@ -112,13 +112,18 @@ export function PricingDashboard({ locale, user }: PricingDashboardProps) {
                 <p className="text-sm font-medium text-white">{user.name}</p>
                 <p className="text-xs text-dark-400">{user.email}</p>
               </div>
-              {user.image && (
-                <img 
-                  src={user.image} 
-                  alt={user.name}
-                  className="w-10 h-10 rounded-full border-2 border-dark-600"
-                />
-              )}
+              <button
+                onClick={async () => {
+                  await fetch("/api/admin/logout", { method: "POST" });
+                  window.location.href = `/${locale}/admin/login`;
+                }}
+                className="px-3 py-2 text-sm text-dark-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
+                title="Sign out"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>

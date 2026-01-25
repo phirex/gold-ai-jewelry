@@ -18,7 +18,7 @@ interface AdminPricingPageProps {
 export default async function AdminPricingPage({ params }: AdminPricingPageProps) {
   const { locale } = await params;
   
-  // Require admin authentication
+  // Require admin authentication (redirects to login if not authenticated)
   const session = await requireAdmin(locale);
 
   return (
@@ -26,9 +26,8 @@ export default async function AdminPricingPage({ params }: AdminPricingPageProps
       <PricingDashboard 
         locale={locale} 
         user={{
-          name: session.user?.name || "Admin",
-          email: session.user?.email || "",
-          image: session.user?.image || undefined,
+          name: session.user.name,
+          email: session.user.email,
         }}
       />
     </main>

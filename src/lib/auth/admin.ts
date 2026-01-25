@@ -4,62 +4,65 @@
  * Provides utilities for admin role verification and protection.
  */
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "./config";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 export type UserRole = "user" | "admin" | "crafter";
 
+// Simple admin credentials (from env or hardcoded for now)
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "Admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Gdfgdg$#%35y5";
+const ADMIN_COOKIE_NAME = "admin_auth";
+const ADMIN_COOKIE_VALUE = "authenticated_admin_session";
+
 /**
- * Check if the current user has admin privileges
+ * Verify admin credentials
  */
-export async function isAdmin(): Promise<boolean> {
-  const session = await getServerSession(authOptions);
-  return session?.user?.role === "admin";
+export function verifyAdminCredentials(username: string, password: string): boolean {
+  return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
 }
 
 /**
- * Check if the current user has crafter or admin privileges
+ * Check if current request has valid admin cookie
  */
-export async function isCrafterOrAdmin(): Promise<boolean> {
-  const session = await getServerSession(authOptions);
-  const role = session?.user?.role;
-  return role === "admin" || role === "crafter";
+export async function isAdminAuthenticated(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const authCookie = cookieStore.get(ADMIN_COOKIE_NAME);
+  return authCookie?.value === ADMIN_COOKIE_VALUE;
 }
 
 /**
- * Get the current admin session or null if not authorized
+ * Get admin auth cookie config
  */
-export async function getAdminSession() {
-  const session = await getServerSession(authOptions);
-  
-  if (!session?.user) {
-    return null;
-  }
-  
-  if (session.user.role !== "admin") {
-    return null;
-  }
-  
-  return session;
+export function getAdminCookieConfig() {
+  return {
+    name: ADMIN_COOKIE_NAME,
+    value: ADMIN_COOKIE_VALUE,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+    maxAge: 60 * 60 * 24, // 24 hours
+    path: "/",
+  };
 }
 
 /**
- * Require admin access - redirects to sign in if not authorized
- * Use this in server components/pages
+ * Require admin access - redirects to login if not authorized
  */
 export async function requireAdmin(locale: string = "en") {
-  const session = await getServerSession(authOptions);
+  const isAuth = await isAdminAuthenticated();
   
-  if (!session?.user) {
-    redirect(`/${locale}/auth/signin?callbackUrl=/${locale}/admin/pricing`);
+  if (!isAuth) {
+    redirect(`/${locale}/admin/login`);
   }
   
-  if (session.user.role !== "admin") {
-    redirect(`/${locale}/unauthorized`);
-  }
-  
-  return session;
+  return {
+    user: {
+      name: "Admin",
+      email: "admin@goldai.com",
+      role: "admin",
+    },
+  };
 }
 
 /**
