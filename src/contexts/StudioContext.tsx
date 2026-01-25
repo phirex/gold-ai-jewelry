@@ -46,6 +46,9 @@ export interface StudioState {
 
   // Pricing
   priceEstimate: number | null;
+
+  // Database tracking - to update the SAME design record
+  currentDesignId: string | null;
 }
 
 interface StudioContextType extends StudioState {
@@ -87,6 +90,9 @@ interface StudioContextType extends StudioState {
   // Pricing
   setPriceEstimate: (price: number | null) => void;
 
+  // Database tracking
+  setCurrentDesignId: (id: string | null) => void;
+
   // Computed
   constructPrompt: () => string;
   getSelectedImage: () => string | null;
@@ -117,6 +123,7 @@ const initialState: StudioState = {
   conversionProgress: 0,
   conversionError: null,
   priceEstimate: null,
+  currentDesignId: null,
 };
 
 const StudioContext = createContext<StudioContextType | undefined>(undefined);
@@ -306,6 +313,11 @@ export function StudioProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, priceEstimate }));
   }, []);
 
+  // Database tracking
+  const setCurrentDesignId = useCallback((currentDesignId: string | null) => {
+    setState((prev) => ({ ...prev, currentDesignId }));
+  }, []);
+
   // Computed helpers
   const constructPrompt = useCallback(() => {
     const { gender, jewelryType, description, material } = state;
@@ -395,6 +407,7 @@ export function StudioProvider({ children }: { children: ReactNode }) {
     setConversionError,
     resetConversion,
     setPriceEstimate,
+    setCurrentDesignId,
     constructPrompt,
     getSelectedImage,
     canGenerate,

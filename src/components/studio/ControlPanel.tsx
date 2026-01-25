@@ -38,6 +38,8 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
     priceEstimate,
     setPriceEstimate,
     resetConversion,
+    currentDesignId,
+    setCurrentDesignId,
   } = useStudio();
 
   const [showRegenerateWarning, setShowRegenerateWarning] = useState(false);
@@ -63,27 +65,11 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
     { value: "platinum" as const, label: "Pt" },
   ];
 
-  // Fetch price estimate when material or jewelry type changes
+  // Clear price estimate when material or jewelry type changes
+  // Price will be calculated accurately AFTER image generation via Claude Vision analysis
   useEffect(() => {
-    if (!jewelryType || !material) return;
-
-    const fetchPrice = async () => {
-      try {
-        const response = await fetch(
-          `/api/pricing/estimate?material=${material}&type=${jewelryType}&complexity=moderate&size=medium`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success && data.breakdown?.total) {
-            setPriceEstimate(data.breakdown.total);
-          }
-        }
-      } catch (error) {
-        console.error("Price fetch error:", error);
-      }
-    };
-
-    fetchPrice();
+    // Reset price when design parameters change - accurate price comes after image generation
+    setPriceEstimate(null);
   }, [jewelryType, material, setPriceEstimate]);
 
   // Check if there are existing images
@@ -130,6 +116,38 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
       // Add first image to history
       if (images[0]) {
         addToHistory(images[0]);
+      }
+
+      // Save design to database with the first image as thumbnail
+      // Price will be calculated when user SELECTS their preferred variation
+      if (images[0] && jewelryType && gender) {
+        try {
+          const saveResponse = await fetch("/api/designs/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: description,
+              jewelryType,
+              targetGender: gender,
+              material,
+              thumbnailUrl: images[0],
+              status: "draft",
+            }),
+          });
+          
+          if (saveResponse.ok) {
+            const saveData = await saveResponse.json();
+            // Store design ID for future updates
+            if (saveData.design?.id) {
+              setCurrentDesignId(saveData.design.id);
+            }
+            // DON'T set price here - wait until user selects a variation
+            // Price will be calculated in PreviewPanel.handleSelectAndConfirm
+          }
+        } catch (saveError) {
+          console.error("Failed to save design:", saveError);
+          // Non-blocking - continue even if save fails
+        }
       }
     } catch (error) {
       console.error("Generation error:", error);
@@ -340,8 +358,8 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
           )}
         </Button>
 
-        {/* Inline price estimate */}
-        {!compact && jewelryType && (
+        {/* Inline price estimate - only shown after image generation */}
+        {!compact && jewelryType && priceEstimate && (
           <div className={cn(
             "flex items-center justify-between text-sm mt-3",
             isApple && "mt-2"
@@ -353,20 +371,19 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
               <DollarSign className="w-3.5 h-3.5" />
               <span>{tPricing("title")}:</span>
             </div>
-            {priceEstimate ? (
-              <span className={cn(
+            <span 
+              className={cn(
                 "font-semibold",
                 isApple ? "text-[#1D1D1F]" : "text-accent-primary"
-              )}>
-                {new Intl.NumberFormat("he-IL", {
-                  style: "currency",
-                  currency: "ILS",
-                  maximumFractionDigits: 0,
-                }).format(priceEstimate)}
-              </span>
-            ) : (
-              <span className={isApple ? "text-[#86868B]" : "text-text-tertiary"}>—</span>
-            )}
+              )}
+              style={{ direction: 'ltr' }}
+            >
+              {new Intl.NumberFormat("he-IL", {
+                style: "currency",
+                currency: "ILS",
+                maximumFractionDigits: 0,
+              }).format(priceEstimate)}
+            </span>
           </div>
         )}
       </div>

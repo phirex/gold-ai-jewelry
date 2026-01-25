@@ -11,6 +11,7 @@
 import { getMetalPricesSafe, getMaterialPrice, type MetalPrices } from "./metals-api";
 import { calculateStonesTotal, type DiamondSizeCategory } from "./diamonds-api";
 import { estimateLabor, quickLaborEstimate, type LaborEstimate, type ComplexityLevel } from "./labor-estimator";
+import { analyzeJewelryImage, analysisToStones, getVolumeAdjustment, type ImageAnalysisResult } from "./image-analyzer";
 
 // Material densities in g/cm³
 export const MATERIAL_DENSITIES: Record<string, number> = {
@@ -57,8 +58,9 @@ export interface PricingInput {
   size?: "small" | "medium" | "large";
   stones?: Stone[];
   complexity?: ComplexityLevel;
-  marginMultiplier?: number; // Default 2.5 for D2C
+  marginMultiplier?: number; // Default 1.8 for online D2C (was 2.5)
   includeAIEstimate?: boolean; // Use Claude for labor estimation
+  imageUrl?: string; // Optional: image URL for vision-based analysis
 }
 
 /**
@@ -112,11 +114,22 @@ export interface PricingBreakdown {
     high: number;
   };
 
+  // AI Image Analysis (if available)
+  aiEstimate?: {
+    complexity: ComplexityLevel;
+    volumeMultiplier: number;
+    stonesDetected: number;
+    laborHours: number;
+    confidence: number;
+    reasoning: string;
+    designFeatures: string[];
+  };
+
   // Metadata
   metadata: {
     currency: "ILS";
     metalPricesSource: "live" | "cached" | "fallback";
-    laborSource: "ai" | "rules";
+    laborSource: "ai" | "rules" | "vision";
     calculatedAt: Date;
   };
 }
@@ -145,17 +158,47 @@ export function estimateVolume(jewelryType: string, size: string = "medium"): nu
 
 /**
  * Calculate comprehensive price with real-time data
+ * 
+ * When imageUrl is provided, uses Claude Vision to analyze the actual image
+ * for more accurate estimation of weight, stones, and complexity.
  */
 export async function calculatePriceAdvanced(
   input: PricingInput
 ): Promise<PricingBreakdown> {
   const startTime = Date.now();
 
+  // 0. If we have an image, analyze it first for better estimates
+  let imageAnalysis: ImageAnalysisResult | null = null;
+  let laborSource: "ai" | "rules" | "vision" = "rules";
+  
+  if (input.imageUrl) {
+    try {
+      console.log("[Calculator] Analyzing image for pricing...");
+      imageAnalysis = await analyzeJewelryImage(input.imageUrl, {
+        jewelryType: input.jewelryType,
+        material: input.material,
+        userDescription: input.description,
+      });
+      laborSource = "vision";
+      console.log(`[Calculator] Image analysis complete: ${imageAnalysis.complexity} complexity, ${imageAnalysis.volumeMultiplier}x volume`);
+    } catch (error) {
+      console.error("[Calculator] Image analysis failed, falling back to text-based:", error);
+    }
+  }
+
   // 1. Get real-time metal prices
   const metalPrices = await getMetalPricesSafe();
 
   // 2. Calculate material cost
-  const volumeCm3 = input.volumeCm3 || estimateVolume(input.jewelryType, input.size);
+  // Use image analysis for volume if available, otherwise estimate
+  let volumeCm3 = input.volumeCm3 || estimateVolume(input.jewelryType, input.size);
+  
+  if (imageAnalysis) {
+    // Apply volume adjustment from image analysis
+    const volumeAdjustment = getVolumeAdjustment(imageAnalysis);
+    volumeCm3 = volumeCm3 * volumeAdjustment;
+  }
+  
   const density = MATERIAL_DENSITIES[input.material] || MATERIAL_DENSITIES.gold_18k;
   const weightGrams = volumeCm3 * density;
   const pricePerGram = getMaterialPrice(metalPrices, input.material);
@@ -163,12 +206,24 @@ export async function calculatePriceAdvanced(
   const materialCost = weightGrams * pricePerGram * wasteFactor;
 
   // 3. Calculate stone costs
+  // Use stones detected from image if available, otherwise use provided stones
   let stoneCost = 0;
   const stoneBreakdown: PricingBreakdown["stones"]["items"] = [];
+  
+  // Merge input stones with detected stones (prefer detected if available)
+  let stonesToCalculate = input.stones || [];
+  
+  if (imageAnalysis && imageAnalysis.totalStoneCount > 0) {
+    // Convert detected stones to pricing format
+    const detectedStones = analysisToStones(imageAnalysis);
+    if (detectedStones.length > 0) {
+      stonesToCalculate = detectedStones;
+    }
+  }
 
-  if (input.stones && input.stones.length > 0) {
+  if (stonesToCalculate.length > 0) {
     const stonesResult = await calculateStonesTotal(
-      input.stones.map((s) => ({
+      stonesToCalculate.map((s) => ({
         type: s.type,
         size: s.size,
         quality: s.quality,
@@ -187,29 +242,49 @@ export async function calculatePriceAdvanced(
   }
 
   // 4. Estimate labor cost
+  // Use image analysis if available, otherwise use text-based AI or rules
   let laborEstimate: LaborEstimate;
-  let laborSource: "ai" | "rules" = "rules";
-
-  if (input.includeAIEstimate !== false && input.description.length >= 10) {
+  
+  if (imageAnalysis && imageAnalysis.confidence >= 0.5) {
+    // Use image-based labor estimate
+    const hourlyRates: Record<string, number> = {
+      simple: 150,
+      moderate: 200,
+      complex: 280,
+      master: 400,
+    };
+    const hourlyRate = hourlyRates[imageAnalysis.complexity] || hourlyRates.moderate;
+    
+    laborEstimate = {
+      hours: imageAnalysis.estimatedLaborHours,
+      complexity: imageAnalysis.complexity,
+      reasoning: imageAnalysis.reasoning,
+      confidence: imageAnalysis.confidence,
+      factors: imageAnalysis.laborFactors,
+      hourlyRateILS: hourlyRate,
+      totalLaborILS: Math.round(imageAnalysis.estimatedLaborHours * hourlyRate),
+    };
+  } else if (input.includeAIEstimate !== false && input.description.length >= 10) {
     try {
       laborEstimate = await estimateLabor({
         description: input.description,
         jewelryType: input.jewelryType,
         material: input.material,
-        hasStones: (input.stones?.length ?? 0) > 0,
-        stoneCount: input.stones?.reduce((sum, s) => sum + s.quantity, 0),
+        hasStones: stonesToCalculate.length > 0,
+        stoneCount: stonesToCalculate.reduce((sum, s) => sum + s.quantity, 0),
       });
       laborSource = "ai";
     } catch {
       // Fallback to quick estimate
+      const complexity = imageAnalysis?.complexity || input.complexity || "moderate";
       const quick = quickLaborEstimate(
         input.jewelryType,
-        input.complexity || "moderate",
-        (input.stones?.length ?? 0) > 0
+        complexity,
+        stonesToCalculate.length > 0
       );
       laborEstimate = {
         hours: quick.hours,
-        complexity: input.complexity || "moderate",
+        complexity,
         reasoning: "Quick rule-based estimate",
         confidence: 0.6,
         factors: [],
@@ -219,14 +294,15 @@ export async function calculatePriceAdvanced(
     }
   } else {
     // Use quick estimate for short descriptions
+    const complexity = imageAnalysis?.complexity || input.complexity || "moderate";
     const quick = quickLaborEstimate(
       input.jewelryType,
-      input.complexity || "moderate",
-      (input.stones?.length ?? 0) > 0
+      complexity,
+      stonesToCalculate.length > 0
     );
     laborEstimate = {
       hours: quick.hours,
-      complexity: input.complexity || "moderate",
+      complexity,
       reasoning: "Quick rule-based estimate",
       confidence: 0.6,
       factors: [],
@@ -242,13 +318,14 @@ export async function calculatePriceAdvanced(
 
   // 6. Calculate total cost and margin
   const costSubtotal = subtotalBeforeOverhead + overhead;
-  const marginMultiplier = input.marginMultiplier ?? 2.5;
+  const marginMultiplier = input.marginMultiplier ?? 1.8; // 80% margin for online D2C
   const margin = costSubtotal * (marginMultiplier - 1);
   const total = costSubtotal + margin;
 
   // 7. Calculate price range based on confidence
-  const confidenceFactor = laborEstimate.confidence || 0.7;
-  const variancePercent = (1 - confidenceFactor) * 0.3; // Up to 30% variance for low confidence
+  // Higher confidence from image analysis = narrower range
+  const confidenceFactor = imageAnalysis?.confidence || laborEstimate.confidence || 0.7;
+  const variancePercent = (1 - confidenceFactor) * 0.2; // Up to 20% variance for low confidence (reduced from 30%)
   const priceRange = {
     low: Math.round(total * (1 - variancePercent)),
     high: Math.round(total * (1 + variancePercent)),
@@ -284,6 +361,25 @@ export async function calculatePriceAdvanced(
     margin: Math.round(margin),
     total: Math.round(total),
     priceRange,
+    // Include AI image analysis if available
+    ...(imageAnalysis && {
+      aiEstimate: {
+        complexity: imageAnalysis.complexity,
+        volumeMultiplier: imageAnalysis.volumeMultiplier,
+        stonesDetected: imageAnalysis.totalStoneCount,
+        laborHours: imageAnalysis.estimatedLaborHours,
+        confidence: imageAnalysis.confidence,
+        reasoning: imageAnalysis.reasoning,
+        designFeatures: [
+          ...(imageAnalysis.designCharacteristics.hasFiligree ? ["Filigree work"] : []),
+          ...(imageAnalysis.designCharacteristics.hasEngraving ? ["Engraving"] : []),
+          ...(imageAnalysis.designCharacteristics.hasMicroDetails ? ["Micro details"] : []),
+          ...(imageAnalysis.designCharacteristics.hasMultipleParts ? ["Multiple parts"] : []),
+          ...(imageAnalysis.designCharacteristics.isHollow ? ["Hollow construction"] : []),
+          ...imageAnalysis.laborFactors,
+        ],
+      },
+    }),
     metadata: {
       currency: "ILS",
       metalPricesSource: metalPrices.source,
@@ -400,7 +496,7 @@ function calculatePriceSimple(input: PricingInputSimple): LegacyPricingBreakdown
 
   // Calculate totals
   const subtotal = materialCost + stoneCost + laborCost;
-  const marginMultiplier = 2.5;
+  const marginMultiplier = 1.8; // 80% margin for online D2C
   const margin = subtotal * (marginMultiplier - 1);
   const total = subtotal + margin;
 

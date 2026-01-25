@@ -72,9 +72,12 @@ export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
     description,
     getSelectedImage,
     priceEstimate,
+    setPriceEstimate,
     setVariations,
     addToHistory,
     setIsGenerating,
+    currentDesignId,
+    setCurrentDesignId,
   } = useStudio();
 
   const [taskId, setTaskId] = useState<string | null>(null);
@@ -164,6 +167,39 @@ export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
           setIsConverting(false);
           setConversionStep("complete");
           clearInterval(pollInterval);
+
+          // Update the existing design with 3D model in database
+          if (jewelryType && gender && description) {
+            try {
+              const selectedImage = enhancedImageUrl || getSelectedImage();
+              const saveResponse = await fetch("/api/designs/save", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  designId: currentDesignId, // Update existing record
+                  prompt: description,
+                  jewelryType,
+                  targetGender: gender,
+                  material: material || "gold_18k",
+                  thumbnailUrl: selectedImage,
+                  modelUrl: data.modelUrl,
+                  tripoTaskId: taskId,
+                  status: "saved",
+                }),
+              });
+              
+              // Update price with image-based estimate from the selected image
+              if (saveResponse.ok) {
+                const saveData = await saveResponse.json();
+                if (saveData.pricing?.estimatedPrice) {
+                  setPriceEstimate(saveData.pricing.estimatedPrice);
+                }
+              }
+            } catch (saveError) {
+              console.error("Failed to save design with 3D model:", saveError);
+              // Non-blocking
+            }
+          }
         } else if (data.status === "failed") {
           setIsConverting(false);
           setConversionStep("error");
@@ -176,14 +212,44 @@ export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
     }, 3000);
 
     return () => clearInterval(pollInterval);
-  }, [taskId, modelUrl, conversionStep]);
+  }, [taskId, modelUrl, conversionStep, jewelryType, gender, description, material, enhancedImageUrl, getSelectedImage, currentDesignId, setPriceEstimate]);
 
-  const handleSelectAndConfirm = (index: 0 | 1) => {
+  const handleSelectAndConfirm = async (index: 0 | 1) => {
     selectVariation(index);
     const url = variations[index];
     if (url) {
       addToHistory(url);
       setHasConfirmedSelection(true);
+      
+      // Update the design in database with the SELECTED image (not first image)
+      // This also recalculates price based on this specific image
+      if (currentDesignId && jewelryType && gender && description) {
+        try {
+          const saveResponse = await fetch("/api/designs/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              designId: currentDesignId,
+              prompt: description,
+              jewelryType,
+              targetGender: gender,
+              material: material || "gold_18k",
+              thumbnailUrl: url, // The SELECTED image
+              status: "draft",
+            }),
+          });
+          
+          if (saveResponse.ok) {
+            const saveData = await saveResponse.json();
+            // Update price based on selected image analysis
+            if (saveData.pricing?.estimatedPrice) {
+              setPriceEstimate(saveData.pricing.estimatedPrice);
+            }
+          }
+        } catch (saveError) {
+          console.error("Failed to update design with selected image:", saveError);
+        }
+      }
     }
   };
 

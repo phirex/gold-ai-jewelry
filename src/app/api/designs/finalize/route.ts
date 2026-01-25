@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getNanoBananaClient, type JewelryImageContext } from "@/lib/ai/nano-banana";
 import { uploadImageFromUrl, isStorageConfigured } from "@/lib/storage/supabase";
+import { prisma } from "@/lib/db/prisma";
 
 /**
  * Finalize Route - Upgrade image to Pro quality before 3D conversion
@@ -17,6 +18,7 @@ const finalizeSchema = z.object({
   targetGender: z.enum(["man", "woman", "unisex"]),
   style: z.enum(["classic", "modern", "vintage", "minimalist", "bold"]).optional(),
   material: z.string().optional(),
+  designId: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -64,6 +66,23 @@ export async function POST(request: NextRequest) {
         folder: `enhanced/${validated.jewelryType}`,
       });
       console.log("Enhanced image uploaded:", finalImageUrl);
+    }
+
+    // Update the design in database if designId provided
+    if (validated.designId) {
+      try {
+        await prisma.design.update({
+          where: { id: validated.designId },
+          data: {
+            thumbnailUrl: finalImageUrl,
+            status: "saved",
+          },
+        });
+        console.log("Design updated with enhanced image");
+      } catch (error) {
+        console.error("Failed to update design:", error);
+        // Non-blocking - continue even if update fails
+      }
     }
 
     return NextResponse.json({

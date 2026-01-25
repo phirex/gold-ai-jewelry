@@ -35,6 +35,8 @@ export function ChatPanel({ className, compact = false }: ChatPanelProps) {
     gender,
     material,
     description,
+    currentDesignId,
+    setPriceEstimate,
   } = useStudio();
 
   const selectedImage = getSelectedImage();
@@ -95,6 +97,36 @@ export function ChatPanel({ className, compact = false }: ChatPanelProps) {
       setVariations([refinedImageUrl, variations[1]]);
       selectVariation(0);
       addToHistory(refinedImageUrl);
+
+      // Update the design in database with the REFINED image
+      // This ensures admin dashboard shows the latest iteration
+      if (currentDesignId && jewelryType && gender) {
+        try {
+          const saveResponse = await fetch("/api/designs/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              designId: currentDesignId,
+              prompt: refinementPrompt, // Updated prompt with refinement
+              jewelryType,
+              targetGender: gender,
+              material: material || "gold_18k",
+              thumbnailUrl: refinedImageUrl, // The NEW refined image
+              status: "draft",
+            }),
+          });
+
+          if (saveResponse.ok) {
+            const saveData = await saveResponse.json();
+            // Update price based on the new refined image
+            if (saveData.pricing?.estimatedPrice) {
+              setPriceEstimate(saveData.pricing.estimatedPrice);
+            }
+          }
+        } catch (saveError) {
+          console.error("Failed to update design with refined image:", saveError);
+        }
+      }
     } catch (error) {
       console.error("Refinement error:", error);
       addChatMessage({

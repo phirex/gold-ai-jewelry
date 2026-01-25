@@ -5,6 +5,7 @@ import { LiveCalculator } from "./LiveCalculator";
 import { PricingPipeline } from "./PricingPipeline";
 import { MarketDataCard } from "./MarketDataCard";
 import { StageDetails } from "./StageDetails";
+import { ProductsPanel } from "./ProductsPanel";
 import type { PricingBreakdown } from "@/lib/pricing/calculator";
 
 interface User {
@@ -39,7 +40,10 @@ export interface CalculatorInput {
   }>;
 }
 
+type DashboardTab = "products" | "calculator";
+
 export function PricingDashboard({ locale, user }: PricingDashboardProps) {
+  const [activeTab, setActiveTab] = useState<DashboardTab>("products");
   const [input, setInput] = useState<CalculatorInput>({
     jewelryType: "ring",
     material: "gold_18k",
@@ -88,40 +92,87 @@ export function PricingDashboard({ locale, user }: PricingDashboardProps) {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className="admin-dashboard" style={{ minHeight: '100vh' }}>
       {/* Header */}
-      <header className="bg-dark-800 border-b border-dark-700 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-                <svg className="w-5 h-5 text-dark-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+      <header style={{
+        background: 'var(--admin-bg-card)',
+        borderBottom: '1px solid var(--admin-border-light)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 50,
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
+            {/* Logo & Title */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, var(--admin-gold) 0%, var(--admin-gold-light) 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: 'var(--admin-shadow-gold)',
+              }}>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M6 3h12l4 6-10 13L2 9z"/>
+                  <path d="M11 3l1 6 1-6"/>
+                  <path d="M2 9h20"/>
                 </svg>
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-white">
-                  Pricing Calculator
+                <h1 className="admin-heading" style={{ fontSize: '1.25rem', marginBottom: '0.125rem' }}>
+                  Admin Dashboard
                 </h1>
-                <p className="text-xs text-dark-400">Admin Dashboard</p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--admin-text-tertiary)' }}>
+                  Products & Pricing
+                </p>
               </div>
             </div>
             
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-white">{user.name}</p>
-                <p className="text-xs text-dark-400">{user.email}</p>
+            {/* User & Actions */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--admin-text-primary)' }}>
+                  {user.name}
+                </p>
+                <p style={{ fontSize: '0.75rem', color: 'var(--admin-text-tertiary)' }}>
+                  {user.email}
+                </p>
               </div>
               <button
                 onClick={async () => {
                   await fetch("/api/admin/logout", { method: "POST" });
                   window.location.href = `/${locale}/admin/login`;
                 }}
-                className="px-3 py-2 text-sm text-dark-400 hover:text-white hover:bg-dark-700 rounded-lg transition-colors"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  border: '1px solid var(--admin-border)',
+                  background: 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'var(--admin-text-tertiary)',
+                  cursor: 'pointer',
+                  transition: 'var(--admin-transition-fast)',
+                }}
                 title="Sign out"
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--admin-gold-border)';
+                  e.currentTarget.style.color = 'var(--admin-gold)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--admin-border)';
+                  e.currentTarget.style.color = 'var(--admin-text-tertiary)';
+                }}
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                  <polyline points="16,17 21,12 16,7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
                 </svg>
               </button>
             </div>
@@ -129,53 +180,160 @@ export function PricingDashboard({ locale, user }: PricingDashboardProps) {
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar - Calculator & Market Data */}
-          <div className="lg:col-span-4 space-y-6">
-            <LiveCalculator
-              input={input}
-              onChange={handleInputChange}
-              onCalculate={handleCalculate}
-              isCalculating={isCalculating}
-            />
-            
-            <MarketDataCard />
-          </div>
-
-          {/* Main Area - Pipeline & Details */}
-          <div className="lg:col-span-8 space-y-6">
-            {/* Visual Pipeline */}
-            <PricingPipeline
-              breakdown={breakdown}
-              activeStage={activeStage}
-              onStageClick={setActiveStage}
-              isCalculating={isCalculating}
-            />
-            
-            {/* Error Display */}
-            {error && (
-              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30">
-                <div className="flex items-center gap-3">
-                  <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="text-sm text-red-400">{error}</p>
-                </div>
-              </div>
-            )}
-            
-            {/* Stage Details */}
-            <StageDetails
-              breakdown={breakdown}
-              input={input}
-              activeStage={activeStage}
-              onStageChange={setActiveStage}
-            />
-          </div>
+      {/* Tab Navigation */}
+      <div style={{
+        background: 'var(--admin-bg-card)',
+        borderBottom: '1px solid var(--admin-border-light)',
+        position: 'sticky',
+        top: '72px',
+        zIndex: 40,
+      }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem' }}>
+          <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '-1px' }}>
+            <TabButton
+              active={activeTab === "products"}
+              onClick={() => setActiveTab("products")}
+              icon={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21,15 16,10 5,21"/>
+                </svg>
+              }
+            >
+              User Products
+            </TabButton>
+            <TabButton
+              active={activeTab === "calculator"}
+              onClick={() => setActiveTab("calculator")}
+              icon={
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+                  <line x1="8" y1="6" x2="16" y2="6"/>
+                  <line x1="8" y1="10" x2="10" y2="10"/>
+                  <line x1="12" y1="10" x2="14" y2="10"/>
+                  <line x1="8" y1="14" x2="10" y2="14"/>
+                  <line x1="12" y1="14" x2="14" y2="14"/>
+                  <line x1="8" y1="18" x2="10" y2="18"/>
+                  <line x1="12" y1="18" x2="16" y2="18"/>
+                </svg>
+              }
+            >
+              Pricing Calculator
+            </TabButton>
+          </nav>
         </div>
       </div>
+
+      {/* Main Content */}
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+        {activeTab === "products" ? (
+          <ProductsPanel />
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem' }}>
+            {/* Left Sidebar - Calculator & Market Data */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <LiveCalculator
+                input={input}
+                onChange={handleInputChange}
+                onCalculate={handleCalculate}
+                isCalculating={isCalculating}
+              />
+              
+              <MarketDataCard />
+            </div>
+
+            {/* Main Area - Pipeline & Details */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              {/* Visual Pipeline */}
+              <PricingPipeline
+                breakdown={breakdown}
+                activeStage={activeStage}
+                onStageClick={setActiveStage}
+                isCalculating={isCalculating}
+              />
+              
+              {/* Error Display */}
+              {error && (
+                <div style={{
+                  padding: '1rem 1.25rem',
+                  borderRadius: 'var(--admin-radius-md)',
+                  background: 'rgba(220, 38, 38, 0.06)',
+                  border: '1px solid rgba(220, 38, 38, 0.15)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <p style={{ fontSize: '0.875rem', color: '#B91C1C' }}>{error}</p>
+                </div>
+              )}
+              
+              {/* Stage Details */}
+              <StageDetails
+                breakdown={breakdown}
+                input={input}
+                activeStage={activeStage}
+                onStageChange={setActiveStage}
+              />
+            </div>
+          </div>
+        )}
+      </main>
     </div>
+  );
+}
+
+// Tab Button Component
+function TabButton({ 
+  active, 
+  onClick, 
+  children, 
+  icon 
+}: { 
+  active: boolean; 
+  onClick: () => void; 
+  children: React.ReactNode;
+  icon: React.ReactNode;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        padding: '0.875rem 1.25rem',
+        fontSize: '0.875rem',
+        fontWeight: 500,
+        fontFamily: 'var(--admin-font-body)',
+        color: active ? 'var(--admin-gold)' : 'var(--admin-text-secondary)',
+        background: 'transparent',
+        border: 'none',
+        borderBottom: `2px solid ${active ? 'var(--admin-gold)' : 'transparent'}`,
+        cursor: 'pointer',
+        transition: 'var(--admin-transition-fast)',
+        marginBottom: '-1px',
+      }}
+      onMouseEnter={(e) => {
+        if (!active) {
+          e.currentTarget.style.color = 'var(--admin-text-primary)';
+          e.currentTarget.style.borderBottomColor = 'var(--admin-border)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!active) {
+          e.currentTarget.style.color = 'var(--admin-text-secondary)';
+          e.currentTarget.style.borderBottomColor = 'transparent';
+        }
+      }}
+    >
+      {icon}
+      {children}
+    </button>
   );
 }

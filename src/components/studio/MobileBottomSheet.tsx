@@ -37,6 +37,8 @@ export function MobileBottomSheet() {
     resetConversion,
     variations,
     getSelectedImage,
+    setCurrentDesignId,
+    setPriceEstimate,
   } = useStudio();
 
   const genderOptions = [
@@ -88,6 +90,36 @@ export function MobileBottomSheet() {
 
       if (images[0]) {
         addToHistory(images[0]);
+      }
+
+      // Save design to database - price calculated when user selects a variation
+      if (images[0] && jewelryType && gender) {
+        try {
+          const saveResponse = await fetch("/api/designs/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: description,
+              jewelryType,
+              targetGender: gender,
+              material,
+              thumbnailUrl: images[0],
+              status: "draft",
+            }),
+          });
+          
+          if (saveResponse.ok) {
+            const saveData = await saveResponse.json();
+            // Store design ID for future updates
+            if (saveData.design?.id) {
+              setCurrentDesignId(saveData.design.id);
+            }
+            // DON'T set price here - wait until user selects a variation
+          }
+        } catch (saveError) {
+          console.error("Failed to save design:", saveError);
+          // Non-blocking - continue even if save fails
+        }
       }
 
       // Collapse sheet after generating
@@ -379,6 +411,11 @@ function MobileChatContent() {
     addToHistory,
     resetConversion,
     description,
+    jewelryType,
+    gender,
+    material,
+    currentDesignId,
+    setPriceEstimate,
   } = useStudio();
 
   const selectedImage = getSelectedImage();
@@ -431,6 +468,34 @@ function MobileChatContent() {
       setVariations([refinedImageUrl, variations[1]]);
       selectVariation(0);
       addToHistory(refinedImageUrl);
+
+      // Update the design in database with the REFINED image
+      if (currentDesignId && jewelryType && gender) {
+        try {
+          const saveResponse = await fetch("/api/designs/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              designId: currentDesignId,
+              prompt: refinementPrompt,
+              jewelryType,
+              targetGender: gender,
+              material: material || "gold_18k",
+              thumbnailUrl: refinedImageUrl,
+              status: "draft",
+            }),
+          });
+
+          if (saveResponse.ok) {
+            const saveData = await saveResponse.json();
+            if (saveData.pricing?.estimatedPrice) {
+              setPriceEstimate(saveData.pricing.estimatedPrice);
+            }
+          }
+        } catch (saveError) {
+          console.error("Failed to update design with refined image:", saveError);
+        }
+      }
     } catch (error) {
       console.error("Refinement error:", error);
       addChatMessage({

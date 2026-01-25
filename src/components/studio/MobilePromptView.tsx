@@ -29,6 +29,8 @@ export function MobilePromptView() {
     addToHistory,
     canGenerate,
     resetConversion,
+    setCurrentDesignId,
+    setPriceEstimate,
   } = useStudio();
 
   const genderOptions = [
@@ -80,6 +82,36 @@ export function MobilePromptView() {
 
       if (images[0]) {
         addToHistory(images[0]);
+      }
+
+      // Save design to database - price calculated when user selects a variation
+      if (images[0] && jewelryType && gender) {
+        try {
+          const saveResponse = await fetch("/api/designs/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: description,
+              jewelryType,
+              targetGender: gender,
+              material,
+              thumbnailUrl: images[0],
+              status: "draft",
+            }),
+          });
+          
+          if (saveResponse.ok) {
+            const saveData = await saveResponse.json();
+            // Store design ID for future updates
+            if (saveData.design?.id) {
+              setCurrentDesignId(saveData.design.id);
+            }
+            // DON'T set price here - wait until user selects a variation
+          }
+        } catch (saveError) {
+          console.error("Failed to save design:", saveError);
+          // Non-blocking - continue even if save fails
+        }
       }
     } catch (error) {
       console.error("Generation error:", error);
