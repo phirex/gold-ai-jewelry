@@ -6,10 +6,8 @@ import { useTheme, Theme } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils/cn";
 
 const themeColors: Record<Theme, { primary: string; secondary: string }> = {
+  minimal: { primary: "#1D1D1F", secondary: "#F5F5F7" },
   warm: { primary: "#D4A574", secondary: "#F5C7C0" },
-  cool: { primary: "#5B9A8B", secondary: "#8B7EC8" },
-  bold: { primary: "#FF6B35", secondary: "#7C3AED" },
-  minimal: { primary: "#111111", secondary: "#737373" },
 };
 
 export function ThemeSwitcher() {

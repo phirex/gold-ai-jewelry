@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Send, Loader2, Sparkles, MessageCircle } from "lucide-react";
 import { useStudio } from "@/contexts/StudioContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
 
@@ -14,6 +15,8 @@ interface ChatPanelProps {
 
 export function ChatPanel({ className, compact = false }: ChatPanelProps) {
   const t = useTranslations("studio.chat");
+  const { theme } = useTheme();
+  const isApple = theme === "minimal";
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -116,18 +119,32 @@ export function ChatPanel({ className, compact = false }: ChatPanelProps) {
     <div
       className={cn(
         "h-full flex flex-col",
-        !compact && "glass-card rounded-2xl",
+        !compact && (isApple 
+          ? "bg-[#FBFBFD] border border-[#E8E8ED] rounded-2xl"
+          : "glass-card rounded-2xl"),
         className
       )}
     >
       {/* Header */}
       {!compact && (
-        <div className="p-4 border-b border-border">
+        <div className={cn(
+          "p-4 border-b",
+          isApple ? "border-[#E8E8ED]" : "border-border"
+        )}>
           <div className="flex items-center gap-2">
-            <MessageCircle className="w-5 h-5 text-accent-primary" />
-            <h3 className="font-semibold text-text-primary">{t("title")}</h3>
+            <MessageCircle className={cn(
+              "w-5 h-5",
+              isApple ? "text-[#1D1D1F]" : "text-accent-primary"
+            )} />
+            <h3 className={cn(
+              "font-semibold",
+              isApple ? "text-[#1D1D1F] tracking-[-0.01em]" : "text-text-primary"
+            )}>{t("title")}</h3>
           </div>
-          <p className="text-xs text-text-tertiary mt-1">{t("subtitle")}</p>
+          <p className={cn(
+            "text-xs mt-1",
+            isApple ? "text-[#6E6E73]" : "text-text-tertiary"
+          )}>{t("subtitle")}</p>
         </div>
       )}
 
@@ -154,11 +171,15 @@ export function ChatPanel({ className, compact = false }: ChatPanelProps) {
                   className={cn(
                     "max-w-[85%] rounded-2xl px-4 py-2.5",
                     message.role === "user"
-                      ? "bg-gradient-to-r from-accent-primary to-accent-secondary text-white"
-                      : "bg-bg-tertiary text-text-primary border border-border"
+                      ? isApple
+                        ? "bg-[#1D1D1F] text-white"
+                        : "bg-gradient-to-r from-accent-primary to-accent-secondary text-white"
+                      : isApple
+                        ? "bg-[#F5F5F7] text-[#1D1D1F]"
+                        : "bg-bg-tertiary text-text-primary border border-border"
                   )}
                 >
-                  <p className="text-sm">{message.content}</p>
+                  <p className={cn("text-sm", isApple && "tracking-[-0.01em]")}>{message.content}</p>
                   {message.imageUrl && (
                     <div className="mt-2 rounded-lg overflow-hidden">
                       <img
@@ -211,7 +232,11 @@ export function ChatPanel({ className, compact = false }: ChatPanelProps) {
       )}
 
       {/* Input */}
-      <div className={cn("border-t border-border", !compact ? "p-4" : "pt-2")}>
+      <div className={cn(
+        "border-t",
+        isApple ? "border-[#E8E8ED]" : "border-border",
+        !compact ? "p-4" : "pt-2"
+      )}>
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -221,12 +246,22 @@ export function ChatPanel({ className, compact = false }: ChatPanelProps) {
             placeholder={hasImage ? t("placeholder") : t("placeholderNoImage")}
             disabled={!hasImage || isRefining}
             className={cn(
-              "flex-1 px-4 py-2.5 rounded-xl",
-              "bg-bg-tertiary border border-border",
-              "text-text-primary placeholder:text-text-tertiary text-sm",
-              "focus:outline-none focus:ring-2 focus:ring-accent-primary/30 focus:border-accent-primary",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              "transition-all duration-200"
+              "flex-1 px-4 py-2.5 transition-all",
+              isApple 
+                ? cn(
+                    "rounded-xl text-[15px] tracking-[-0.01em]",
+                    "bg-[#F5F5F7] border border-transparent",
+                    "text-[#1D1D1F] placeholder:text-[#86868B]",
+                    "focus:outline-none focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/15",
+                    "disabled:opacity-50 disabled:cursor-not-allowed"
+                  )
+                : cn(
+                    "rounded-xl text-sm duration-200",
+                    "bg-bg-tertiary border border-border",
+                    "text-text-primary placeholder:text-text-tertiary",
+                    "focus:outline-none focus:ring-2 focus:ring-accent-primary/30 focus:border-accent-primary",
+                    "disabled:opacity-50 disabled:cursor-not-allowed"
+                  )
             )}
           />
           <Button

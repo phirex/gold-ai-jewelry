@@ -1,5 +1,5 @@
 /* Google Fonts - must be first */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @import "tailwindcss";
 
@@ -200,62 +200,86 @@
   --theme-name: "bold";
 }
 
-/* Theme 4: Pure Minimalist */
+/* Theme 4: Apple Minimal - Soft, Clean, B&W */
 .theme-minimal {
-  /* Backgrounds */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #FAFAFA;
-  --bg-tertiary: #F5F5F5;
-  --bg-accent: #F0F0F0;
+  /* Backgrounds - Apple's signature pure whites with subtle warmth */
+  --bg-primary: #FBFBFD;
+  --bg-secondary: #F5F5F7;
+  --bg-tertiary: #EFEFEF;
+  --bg-accent: #E8E8ED;
 
-  /* Monochrome Spectrum */
-  --gold-50: #FAFAFA;
-  --gold-100: #F5F5F5;
-  --gold-200: #E5E5E5;
-  --gold-300: #D4D4D4;
-  --gold-400: #A3A3A3;
-  --gold-500: #737373;
-  --gold-600: #525252;
-  --gold-700: #404040;
-  --gold-800: #262626;
+  /* Monochrome Spectrum - Softer, warmer grays */
+  --gold-50: #F5F5F7;
+  --gold-100: #EFEFEF;
+  --gold-200: #E8E8ED;
+  --gold-300: #D2D2D7;
+  --gold-400: #86868B;
+  --gold-500: #6E6E73;
+  --gold-600: #48484A;
+  --gold-700: #3A3A3C;
+  --gold-800: #1D1D1F;
 
-  /* Accents */
-  --accent-primary: #111111;
-  --accent-secondary: #525252;
-  --accent-tertiary: #A3A3A3;
-  --accent-pop: #111111;
+  /* Accents - Apple's signature deep black with blue for interactive */
+  --accent-primary: #1D1D1F;
+  --accent-secondary: #424245;
+  --accent-tertiary: #86868B;
+  --accent-pop: #0071E3;
+  --accent-link: #0066CC;
 
-  /* Text */
-  --text-primary: #111111;
-  --text-secondary: #525252;
-  --text-tertiary: #737373;
-  --text-inverse: #FFFFFF;
+  /* Text - Apple's text hierarchy */
+  --text-primary: #1D1D1F;
+  --text-secondary: #424245;
+  --text-tertiary: #6E6E73;
+  --text-quaternary: #86868B;
+  --text-inverse: #FBFBFD;
 
-  /* Borders & UI */
-  --border: #E5E5E5;
-  --border-light: #F0F0F0;
-  --ring: #111111;
+  /* Borders & UI - Ultra-subtle, almost invisible */
+  --border: #D2D2D7;
+  --border-light: #E8E8ED;
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --ring: #0071E3;
 
-  /* Shadows */
+  /* Shadows - Apple's signature soft, layered shadows */
   --shadow-color: 0, 0, 0;
-  --shadow-sm: 0 1px 3px rgba(var(--shadow-color), 0.04);
-  --shadow-md: 0 4px 12px rgba(var(--shadow-color), 0.06);
-  --shadow-lg: 0 10px 30px rgba(var(--shadow-color), 0.08);
-  --shadow-xl: 0 20px 50px rgba(var(--shadow-color), 0.1);
-  --shadow-accent: 0 8px 30px rgba(0, 0, 0, 0.1);
+  --shadow-xs: 0 0 0 1px rgba(var(--shadow-color), 0.03);
+  --shadow-sm: 0 1px 2px rgba(var(--shadow-color), 0.04), 0 1px 3px rgba(var(--shadow-color), 0.02);
+  --shadow-md: 0 2px 8px rgba(var(--shadow-color), 0.04), 0 4px 16px rgba(var(--shadow-color), 0.04);
+  --shadow-lg: 0 4px 12px rgba(var(--shadow-color), 0.05), 0 8px 32px rgba(var(--shadow-color), 0.06);
+  --shadow-xl: 0 8px 24px rgba(var(--shadow-color), 0.06), 0 16px 48px rgba(var(--shadow-color), 0.08);
+  --shadow-accent: 0 4px 16px rgba(0, 113, 227, 0.16);
+  --shadow-float: 0 22px 70px 4px rgba(var(--shadow-color), 0.12);
 
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.8);
-  --glass-border: rgba(0, 0, 0, 0.08);
+  /* Glassmorphism - More refined, Apple-like blur */
+  --glass-bg: rgba(251, 251, 253, 0.72);
+  --glass-border: rgba(0, 0, 0, 0.06);
+  --glass-blur: 20px;
+  --glass-saturate: 180%;
 
-  /* Gradients */
-  --gradient-accent: linear-gradient(135deg, #111111 0%, #404040 100%);
-  --gradient-soft: linear-gradient(135deg, #F5F5F5 0%, #E5E5E5 100%);
-  --gradient-mesh:
-    radial-gradient(at 40% 20%, #FAFAFA 0px, transparent 50%),
-    radial-gradient(at 80% 0%, #F5F5F5 0px, transparent 50%),
-    radial-gradient(at 0% 100%, #F0F0F0 0px, transparent 50%),
-    #FFFFFF;
+  /* Gradients - Minimal, subtle */
+  --gradient-accent: linear-gradient(180deg, #1D1D1F 0%, #3A3A3C 100%);
+  --gradient-soft: linear-gradient(180deg, #F5F5F7 0%, #EFEFEF 100%);
+  --gradient-mesh: #FBFBFD;
+  --gradient-blue: linear-gradient(180deg, #0077ED 0%, #0071E3 100%);
+  
+  /* Button-specific gradients */
+  --btn-primary-bg: #1D1D1F;
+  --btn-primary-hover: #3A3A3C;
+  --btn-secondary-bg: #F5F5F7;
+  --btn-secondary-hover: #EFEFEF;
+
+  /* Transitions - Apple's signature smooth timing */
+  --transition-fast: 150ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-normal: 250ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-slow: 350ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  --transition-spring: 500ms cubic-bezier(0.175, 0.885, 0.32, 1.1);
+
+  /* Border Radius - Apple's softer corners */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-full: 9999px;
 
   --theme-name: "minimal";
 }
@@ -304,6 +328,332 @@
   --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
   --font-sans: var(--font-body);
   --font-serif: var(--font-display);
+  --font-apple: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+}
+
+/* ===========================
+   APPLE MINIMAL THEME OVERRIDES
+   =========================== */
+
+/* Apple-like typography when minimal theme is active */
+.theme-minimal {
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+}
+
+.theme-minimal body {
+  font-family: var(--font-apple);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: -0.011em;
+}
+
+.theme-minimal h1,
+.theme-minimal h2,
+.theme-minimal h3,
+.theme-minimal .heading {
+  font-family: var(--font-apple);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+/* Apple-style inputs */
+.theme-minimal input,
+.theme-minimal textarea,
+.theme-minimal select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  font-family: var(--font-apple);
+  font-size: 17px;
+  line-height: 1.47059;
+  padding: 11px 15px;
+  transition: var(--transition-fast);
+}
+
+.theme-minimal input:focus,
+.theme-minimal textarea:focus,
+.theme-minimal select:focus {
+  border-color: var(--accent-pop);
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+  outline: none;
+}
+
+.theme-minimal input::placeholder,
+.theme-minimal textarea::placeholder {
+  color: var(--text-quaternary);
+}
+
+/* Apple-style buttons base */
+.theme-minimal button {
+  font-family: var(--font-apple);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: var(--transition-fast);
+}
+
+/* Apple-style cards */
+.theme-minimal .card,
+.theme-minimal .glass-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-normal);
+}
+
+.theme-minimal .card:hover,
+.theme-minimal .glass-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Apple-style glass effect */
+.theme-minimal .glass,
+.theme-minimal .glass-strong {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+}
+
+/* Apple-style hover effects - subtle scale instead of lift */
+.theme-minimal .hover-lift:hover {
+  transform: scale(1.01);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-minimal .hover-lift-lg:hover {
+  transform: scale(1.015);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Apple-style pressed state */
+.theme-minimal .press-effect:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+/* Apple-style scrollbar */
+.theme-minimal ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-minimal ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.theme-minimal ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.theme-minimal ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Apple-style selection */
+.theme-minimal ::selection {
+  background: rgba(0, 113, 227, 0.2);
+  color: var(--text-primary);
+}
+
+/* Apple-style focus ring */
+.theme-minimal *:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.3);
+}
+
+/* Apple-style links - all links inherit color (black/gray) */
+.theme-minimal a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.theme-minimal a:hover {
+  opacity: 0.7;
+}
+
+/* Only explicit text links get blue (for inline content links) */
+.theme-minimal a.text-link,
+.theme-minimal .prose a {
+  color: var(--accent-pop);
+}
+
+.theme-minimal a.text-link:hover,
+.theme-minimal .prose a:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  opacity: 1;
+}
+
+/* Remove gradient backgrounds for minimal */
+.theme-minimal .mesh-gradient,
+.theme-minimal .mesh-gradient-animated {
+  background: var(--bg-primary);
+  animation: none;
+}
+
+/* Apple-style text gradient (for special headings) */
+.theme-minimal .text-gradient {
+  background: linear-gradient(180deg, #1D1D1F 0%, #48484A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Apple blue accent button variant */
+.theme-minimal .btn-apple-blue {
+  background: var(--accent-pop);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 12px 24px;
+  font-weight: 500;
+  font-size: 17px;
+  transition: var(--transition-fast);
+}
+
+.theme-minimal .btn-apple-blue:hover {
+  background: #0077ED;
+}
+
+.theme-minimal .btn-apple-blue:active {
+  transform: scale(0.98);
+}
+
+/* Apple dark button variant */
+.theme-minimal .btn-apple-dark {
+  background: var(--btn-primary-bg);
+  color: white;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 12px 24px;
+  font-weight: 500;
+  font-size: 17px;
+  transition: var(--transition-fast);
+}
+
+.theme-minimal .btn-apple-dark:hover {
+  background: var(--btn-primary-hover);
+}
+
+/* Apple secondary button */
+.theme-minimal .btn-apple-secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 12px 24px;
+  font-weight: 500;
+  font-size: 17px;
+  transition: var(--transition-fast);
+}
+
+.theme-minimal .btn-apple-secondary:hover {
+  background: var(--btn-secondary-hover);
+}
+
+/* Apple-style dividers */
+.theme-minimal hr,
+.theme-minimal .border-t,
+.theme-minimal .border-b {
+  border-color: var(--border-light);
+}
+
+/* Soften shadows globally in minimal theme */
+.theme-minimal .shadow-soft {
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-minimal .shadow-medium {
+  box-shadow: var(--shadow-md);
+}
+
+.theme-minimal .shadow-heavy {
+  box-shadow: var(--shadow-lg);
+}
+
+.theme-minimal .shadow-accent {
+  box-shadow: var(--shadow-accent);
+}
+
+/* Apple-style subtle animations */
+.theme-minimal .animate-fade-in {
+  animation: appleFadeIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.theme-minimal .animate-fade-in-up {
+  animation: appleFadeInUp 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.theme-minimal .animate-fade-in-down {
+  animation: appleFadeInDown 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+.theme-minimal .animate-scale-in {
+  animation: appleScaleIn 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes appleFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes appleFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appleFadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes appleScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Remove blobs and decorative elements in minimal */
+.theme-minimal .blob,
+.theme-minimal .blob-accent {
+  display: none;
+}
+
+/* Apple-style floating elements - more subtle */
+.theme-minimal .animate-float {
+  animation: appleFloat 6s ease-in-out infinite;
+}
+
+@keyframes appleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 /* ===========================

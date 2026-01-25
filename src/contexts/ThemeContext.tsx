@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
-export type Theme = "warm" | "cool" | "bold" | "minimal";
+export type Theme = "warm" | "minimal";
 
 interface ThemeContextType {
   theme: Theme;
@@ -11,10 +11,8 @@ interface ThemeContextType {
 }
 
 const themes: ThemeContextType["themes"] = [
-  { value: "warm", label: "Warm Luxury", description: "Creamy whites & warm golds" },
-  { value: "cool", label: "Cool Modern", description: "Fresh teals & soft purples" },
-  { value: "bold", label: "Bold & Vibrant", description: "Energetic oranges & purples" },
-  { value: "minimal", label: "Pure Minimalist", description: "Clean blacks & whites" },
+  { value: "minimal", label: "Modern", description: "Clean black & white" },
+  { value: "warm", label: "Classic Gold", description: "Warm luxury tones" },
 ];
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -22,12 +20,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const STORAGE_KEY = "gold-ai-theme";
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("warm");
+  const [theme, setThemeState] = useState<Theme>("minimal");
   const [mounted, setMounted] = useState(false);
 
   // Load theme from localStorage on mount
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
+    // Only accept valid themes (minimal or warm)
     if (stored && themes.some((t) => t.value === stored)) {
       setThemeState(stored);
     }
@@ -57,7 +56,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
-      <ThemeContext.Provider value={{ theme: "warm", setTheme, themes }}>
+      <ThemeContext.Provider value={{ theme: "minimal", setTheme, themes }}>
         {children}
       </ThemeContext.Provider>
     );

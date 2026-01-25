@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Sparkles, Loader2, DollarSign, AlertTriangle, X } from "lucide-react";
 import { useStudio } from "@/contexts/StudioContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils/cn";
 
@@ -16,6 +17,8 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
   const t = useTranslations("studio");
   const tWizard = useTranslations("design.wizard");
   const tPricing = useTranslations("design.pricing");
+  const { theme } = useTheme();
+  const isApple = theme === "minimal";
 
   const {
     gender,
@@ -139,14 +142,23 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
     <div
       className={cn(
         "h-full flex flex-col",
-        !compact && "glass-card rounded-2xl p-4",
+        !compact && (isApple 
+          ? "bg-[#FBFBFD] border border-[#E8E8ED] rounded-2xl overflow-hidden"
+          : "glass-card rounded-2xl overflow-hidden"),
         className
       )}
     >
-      <div className={cn("flex-1 overflow-y-auto space-y-3", compact && "space-y-2")}>
+      <div className={cn(
+        "flex-1 overflow-y-auto",
+        isApple ? "space-y-5 p-5 pb-2" : "space-y-3 p-4 pb-2", 
+        compact && "space-y-2 p-3"
+      )}>
         {/* Gender Selection */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-text-secondary">
+        <div className={cn("space-y-2", isApple && "space-y-3")}>
+          <label className={cn(
+            "font-medium",
+            isApple ? "text-xs text-[#6E6E73] uppercase tracking-wide" : "text-sm text-text-secondary"
+          )}>
             {t("controls.gender")}
           </label>
           <div className="flex gap-2">
@@ -155,10 +167,20 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
                 key={option.value}
                 onClick={() => setGender(option.value)}
                 className={cn(
-                  "flex-1 py-2 px-3 rounded-xl text-sm font-medium transition-all duration-200",
-                  gender === option.value
-                    ? "bg-gradient-to-r from-accent-primary to-accent-secondary text-white shadow-glow"
-                    : "bg-bg-tertiary text-text-secondary hover:bg-bg-accent hover:text-text-primary border border-border"
+                  "flex-1 font-medium transition-all",
+                  isApple 
+                    ? cn(
+                        "py-2.5 px-3 rounded-lg text-[13px] tracking-[-0.01em]",
+                        gender === option.value
+                          ? "bg-[#1D1D1F] text-white"
+                          : "bg-[#F5F5F7] text-[#1D1D1F] hover:bg-[#EFEFEF] active:scale-[0.98]"
+                      )
+                    : cn(
+                        "py-2 px-3 rounded-xl text-sm duration-200",
+                        gender === option.value
+                          ? "bg-gradient-to-r from-accent-primary to-accent-secondary text-white shadow-glow"
+                          : "bg-bg-tertiary text-text-secondary hover:bg-bg-accent hover:text-text-primary border border-border"
+                      )
                 )}
               >
                 {option.label}
@@ -168,8 +190,11 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
         </div>
 
         {/* Jewelry Type */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-text-secondary">
+        <div className={cn("space-y-2", isApple && "space-y-3")}>
+          <label className={cn(
+            "font-medium",
+            isApple ? "text-xs text-[#6E6E73] uppercase tracking-wide" : "text-sm text-text-secondary"
+          )}>
             {t("controls.type")}
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -178,10 +203,20 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
                 key={type.value}
                 onClick={() => setJewelryType(type.value)}
                 className={cn(
-                  "py-2.5 px-3 rounded-xl text-sm font-medium transition-all duration-200",
-                  jewelryType === type.value
-                    ? "bg-gradient-to-r from-accent-primary to-accent-secondary text-white shadow-glow"
-                    : "bg-bg-tertiary text-text-secondary hover:bg-bg-accent hover:text-text-primary border border-border"
+                  "font-medium transition-all",
+                  isApple 
+                    ? cn(
+                        "py-2.5 px-3 rounded-lg text-[13px] tracking-[-0.01em]",
+                        jewelryType === type.value
+                          ? "bg-[#1D1D1F] text-white"
+                          : "bg-[#F5F5F7] text-[#1D1D1F] hover:bg-[#EFEFEF] active:scale-[0.98]"
+                      )
+                    : cn(
+                        "py-2.5 px-3 rounded-xl text-sm duration-200",
+                        jewelryType === type.value
+                          ? "bg-gradient-to-r from-accent-primary to-accent-secondary text-white shadow-glow"
+                          : "bg-bg-tertiary text-text-secondary hover:bg-bg-accent hover:text-text-primary border border-border"
+                      )
                 )}
               >
                 {type.label}
@@ -191,8 +226,11 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
         </div>
 
         {/* Material Selection */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-text-secondary">
+        <div className={cn("space-y-2", isApple && "space-y-3")}>
+          <label className={cn(
+            "font-medium",
+            isApple ? "text-xs text-[#6E6E73] uppercase tracking-wide" : "text-sm text-text-secondary"
+          )}>
             {t("controls.material")}
           </label>
           <div className="flex flex-wrap gap-2">
@@ -201,10 +239,20 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
                 key={mat.value}
                 onClick={() => setMaterial(mat.value)}
                 className={cn(
-                  "py-2 px-4 rounded-xl text-sm font-medium transition-all duration-200",
-                  material === mat.value
-                    ? "bg-gradient-to-r from-accent-primary to-accent-secondary text-white shadow-glow"
-                    : "bg-bg-tertiary text-text-secondary hover:bg-bg-accent hover:text-text-primary border border-border"
+                  "font-medium transition-all",
+                  isApple 
+                    ? cn(
+                        "py-2 px-4 rounded-full text-[13px] tracking-[-0.01em]",
+                        material === mat.value
+                          ? "bg-[#1D1D1F] text-white"
+                          : "bg-[#F5F5F7] text-[#1D1D1F] hover:bg-[#EFEFEF] active:scale-[0.98]"
+                      )
+                    : cn(
+                        "py-2 px-4 rounded-xl text-sm duration-200",
+                        material === mat.value
+                          ? "bg-gradient-to-r from-accent-primary to-accent-secondary text-white shadow-glow"
+                          : "bg-bg-tertiary text-text-secondary hover:bg-bg-accent hover:text-text-primary border border-border"
+                      )
                 )}
               >
                 {mat.label}
@@ -214,17 +262,25 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
         </div>
 
         {/* Divider */}
-        <div className="border-t border-border" />
+        <div className={cn(
+          "border-t",
+          isApple ? "border-[#E8E8ED]" : "border-border"
+        )} />
 
         {/* Description */}
-        <div className="space-y-1.5">
+        <div className={cn("space-y-1.5", isApple && "space-y-2")}>
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-text-secondary">
+            <label className={cn(
+              "font-medium",
+              isApple ? "text-xs text-[#6E6E73] uppercase tracking-wide" : "text-sm text-text-secondary"
+            )}>
               {t("controls.description")}
             </label>
             <span className={cn(
               "text-xs",
-              description.trim().length >= 10 ? "text-text-tertiary" : "text-accent-primary"
+              isApple 
+                ? (description.trim().length >= 10 ? "text-[#86868B]" : "text-[#86868B]")
+                : (description.trim().length >= 10 ? "text-text-tertiary" : "text-accent-primary")
             )}>
               {description.trim().length}/10
             </span>
@@ -235,58 +291,84 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
             placeholder={t("controls.descriptionPlaceholder")}
             rows={compact ? 2 : 3}
             className={cn(
-              "w-full px-3 py-2 rounded-xl resize-none text-sm",
-              "bg-bg-tertiary border border-border",
-              "text-text-primary placeholder:text-text-tertiary",
-              "focus:outline-none focus:ring-2 focus:ring-accent-primary/30 focus:border-accent-primary",
-              "transition-all duration-200"
+              "w-full resize-none transition-all",
+              isApple 
+                ? cn(
+                    "px-4 py-3 rounded-xl text-[15px] tracking-[-0.01em]",
+                    "bg-[#F5F5F7] border border-transparent",
+                    "text-[#1D1D1F] placeholder:text-[#86868B]",
+                    "focus:outline-none focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/15"
+                  )
+                : cn(
+                    "px-3 py-2 rounded-xl text-sm duration-200",
+                    "bg-bg-tertiary border border-border",
+                    "text-text-primary placeholder:text-text-tertiary",
+                    "focus:outline-none focus:ring-2 focus:ring-accent-primary/30 focus:border-accent-primary"
+                  )
             )}
           />
         </div>
+      </div>
 
-        {/* Generate Button with inline price */}
-        <div className="space-y-2">
-          <Button
-            variant="gradient"
-            size="lg"
-            className="w-full gap-2"
-            onClick={handleGenerateClick}
-            disabled={!canGenerate() || isGenerating}
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                {t("generating")}
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-5 h-5" />
-                {t("generate")}
-              </>
-            )}
-          </Button>
-
-          {/* Inline price estimate */}
-          {!compact && jewelryType && (
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center gap-1.5 text-text-tertiary">
-                <DollarSign className="w-3.5 h-3.5" />
-                <span>{tPricing("title")}:</span>
-              </div>
-              {priceEstimate ? (
-                <span className="font-semibold text-accent-primary">
-                  {new Intl.NumberFormat("he-IL", {
-                    style: "currency",
-                    currency: "ILS",
-                    maximumFractionDigits: 0,
-                  }).format(priceEstimate)}
-                </span>
-              ) : (
-                <span className="text-text-tertiary">—</span>
-              )}
-            </div>
+      {/* Generate Button - Sticky at bottom */}
+      <div className={cn(
+        "sticky bottom-0 border-t",
+        isApple 
+          ? "bg-[#FBFBFD] border-[#E8E8ED] p-5 pt-4"
+          : "bg-bg-primary/95 backdrop-blur-sm border-border p-4 pt-3"
+      )}>
+        <Button
+          variant="gradient"
+          size="lg"
+          className={cn(
+            "w-full gap-2",
+            isApple && "bg-[#1D1D1F] hover:bg-[#3A3A3C]"
           )}
-        </div>
+          onClick={handleGenerateClick}
+          disabled={!canGenerate() || isGenerating}
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              {t("generating")}
+            </>
+          ) : (
+            <>
+              <Sparkles className="w-5 h-5" />
+              {t("generate")}
+            </>
+          )}
+        </Button>
+
+        {/* Inline price estimate */}
+        {!compact && jewelryType && (
+          <div className={cn(
+            "flex items-center justify-between text-sm mt-3",
+            isApple && "mt-2"
+          )}>
+            <div className={cn(
+              "flex items-center gap-1.5",
+              isApple ? "text-[#6E6E73]" : "text-text-tertiary"
+            )}>
+              <DollarSign className="w-3.5 h-3.5" />
+              <span>{tPricing("title")}:</span>
+            </div>
+            {priceEstimate ? (
+              <span className={cn(
+                "font-semibold",
+                isApple ? "text-[#1D1D1F]" : "text-accent-primary"
+              )}>
+                {new Intl.NumberFormat("he-IL", {
+                  style: "currency",
+                  currency: "ILS",
+                  maximumFractionDigits: 0,
+                }).format(priceEstimate)}
+              </span>
+            ) : (
+              <span className={isApple ? "text-[#86868B]" : "text-text-tertiary"}>—</span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Regenerate Warning Dialog */}
@@ -294,37 +376,62 @@ export function ControlPanel({ className, compact = false }: ControlPanelProps) 
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className={cn(
+              "absolute inset-0",
+              isApple ? "bg-black/40 backdrop-blur-xl" : "bg-black/50 backdrop-blur-sm"
+            )}
             onClick={() => setShowRegenerateWarning(false)}
           />
 
           {/* Dialog */}
-          <div className="relative bg-bg-primary border border-border rounded-2xl p-6 max-w-sm w-full shadow-xl">
+          <div className={cn(
+            "relative p-6 max-w-sm w-full",
+            isApple 
+              ? "bg-[#FBFBFD] border border-[#E8E8ED] rounded-2xl shadow-[0_22px_70px_4px_rgba(0,0,0,0.12)]"
+              : "bg-bg-primary border border-border rounded-2xl shadow-xl"
+          )}>
             {/* Close button */}
             <button
               onClick={() => setShowRegenerateWarning(false)}
-              className="absolute top-4 right-4 text-text-tertiary hover:text-text-primary transition-colors"
+              className={cn(
+                "absolute top-4 right-4 transition-colors",
+                isApple 
+                  ? "text-[#86868B] hover:text-[#1D1D1F]"
+                  : "text-text-tertiary hover:text-text-primary"
+              )}
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Icon */}
-            <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center mb-4">
-              <AlertTriangle className="w-6 h-6 text-amber-500" />
+            <div className={cn(
+              "w-12 h-12 rounded-full flex items-center justify-center mb-4",
+              isApple ? "bg-[#FF9500]/10" : "bg-amber-500/10"
+            )}>
+              <AlertTriangle className={cn(
+                "w-6 h-6",
+                isApple ? "text-[#FF9500]" : "text-amber-500"
+              )} />
             </div>
 
             {/* Content */}
-            <h3 className="text-lg font-semibold text-text-primary mb-2">
+            <h3 className={cn(
+              "text-lg font-semibold mb-2",
+              isApple ? "text-[#1D1D1F] tracking-[-0.02em]" : "text-text-primary"
+            )}>
               {t("regenerateWarning.title")}
             </h3>
-            <p className="text-sm text-text-secondary mb-6">
+            <p className={cn(
+              "text-sm mb-6",
+              isApple ? "text-[#6E6E73] leading-relaxed" : "text-text-secondary"
+            )}>
               {t("regenerateWarning.message")}
             </p>
 
             {/* Actions */}
             <div className="flex gap-3">
               <Button
-                variant="outline"
+                variant="secondary"
                 className="flex-1"
                 onClick={() => setShowRegenerateWarning(false)}
               >

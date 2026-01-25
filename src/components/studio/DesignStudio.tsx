@@ -5,10 +5,16 @@ import { ControlPanel } from "./ControlPanel";
 import { PreviewPanel } from "./PreviewPanel";
 import { ChatPanel } from "./ChatPanel";
 import { MobileBottomSheet } from "./MobileBottomSheet";
+import { MobilePromptView } from "./MobilePromptView";
+import { useStudio } from "@/contexts/StudioContext";
 import { cn } from "@/lib/utils/cn";
 
 export function DesignStudio() {
   const t = useTranslations("studio");
+  const { variations, isGenerating } = useStudio();
+
+  // Check if we have any generated images
+  const hasDesign = variations[0] !== null || variations[1] !== null || isGenerating;
 
   return (
     <div className="h-full">
@@ -30,15 +36,22 @@ export function DesignStudio() {
         </div>
       </div>
 
-      {/* Mobile Layout: Stacked with bottom sheet */}
+      {/* Mobile Layout */}
       <div className="lg:hidden flex flex-col h-[calc(100vh-120px)]">
-        {/* Preview area takes most of the screen */}
-        <div className="flex-1 p-3 overflow-hidden">
-          <PreviewPanel isMobile />
-        </div>
+        {hasDesign ? (
+          <>
+            {/* Preview area takes most of the screen when we have a design */}
+            <div className="flex-1 p-3 overflow-hidden">
+              <PreviewPanel isMobile />
+            </div>
 
-        {/* Bottom Sheet with controls */}
-        <MobileBottomSheet />
+            {/* Bottom Sheet with controls */}
+            <MobileBottomSheet />
+          </>
+        ) : (
+          /* Full-screen prompt view when no design yet */
+          <MobilePromptView />
+        )}
       </div>
     </div>
   );

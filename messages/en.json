@@ -286,8 +286,34 @@
       "stones": "Stones",
       "labor": "Craftsmanship",
       "total": "Total",
+      "overhead": "Overhead",
       "note": "Final price may vary slightly based on exact specifications",
-      "generatePrompt": "Generate a design to see pricing"
+      "generatePrompt": "Generate a design to see pricing",
+      "estimatedPrice": "Estimated Price",
+      "weight": "Weight",
+      "pricePerGram": "Price/gram",
+      "complexity": "Complexity",
+      "estimatedHours": "Est. hours",
+      "confidence": "Confidence",
+      "showDetails": "Show details",
+      "showLess": "Show less",
+      "lastUpdated": "Updated",
+      "market": {
+        "live": "Live",
+        "cached": "Cached",
+        "offline": "Offline",
+        "livePrices": "Using real-time market prices",
+        "cachedPrices": "Using recently cached prices",
+        "fallbackPrices": "Using fallback prices - market data unavailable"
+      },
+      "metals": {
+        "title": "Current Metal Prices",
+        "gold24k": "24K Gold",
+        "gold18k": "18K Gold",
+        "gold14k": "14K Gold",
+        "silver": "Silver",
+        "platinum": "Platinum"
+      }
     },
     "actions": {
       "addToCart": "Add to Cart",
@@ -439,7 +465,9 @@
     },
     "emptyState": {
       "title": "Start Creating",
-      "description": "Select options and describe your dream jewelry to generate unique designs"
+      "description": "Select options and describe your dream jewelry to generate unique designs",
+      "charsNeeded": "{count} more characters needed",
+      "selectAll": "Select all options above to generate"
     },
     "preview": {
       "model3d": "3D Model"

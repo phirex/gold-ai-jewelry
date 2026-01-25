@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useStudio } from "@/contexts/StudioContext";
 import { useCart } from "@/contexts/CartContext";
+import { useTheme } from "@/contexts/ThemeContext";
 import { ModelViewer } from "@/components/design/ModelViewer";
 import { HistoryStrip } from "./HistoryStrip";
 import { Button } from "@/components/ui/Button";
@@ -36,6 +37,8 @@ export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
   const locale = useLocale();
   const router = useRouter();
   const { addItem } = useCart();
+  const { theme } = useTheme();
+  const isApple = theme === "minimal";
 
   const {
     variations,
@@ -314,7 +317,12 @@ export function PreviewPanel({ isMobile = false }: PreviewPanelProps) {
   return (
     <div className={cn("h-full flex flex-col gap-3", isMobile && "gap-2")}>
       {/* Main Preview Area */}
-      <div className="flex-1 glass-card rounded-2xl p-4 overflow-hidden">
+      <div className={cn(
+        "flex-1 rounded-2xl p-4 overflow-hidden",
+        isApple 
+          ? "bg-[#FBFBFD] border border-[#E8E8ED]"
+          : "glass-card"
+      )}>
 
         {/* PHASE: 3D Model Complete */}
         {viewPhase === "complete" && modelUrl && (
