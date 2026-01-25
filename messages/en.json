@@ -524,6 +524,17 @@
       "cancel": "Cancel"
     }
   },
+  "admin": {
+    "pricing": {
+      "title": "Pricing Calculator - Admin",
+      "description": "Calculate jewelry manufacturing costs with real-time market data"
+    },
+    "unauthorized": {
+      "title": "Access Denied",
+      "message": "You don't have permission to access this page. Admin privileges are required.",
+      "backHome": "Return Home"
+    }
+  },
   "errors": {
     "required": "This field is required",
     "invalidEmail": "Please enter a valid email",
