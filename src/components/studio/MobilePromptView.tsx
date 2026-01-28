@@ -148,6 +148,54 @@ export function MobilePromptView() {
           </h1>
         </div>
 
+        {/* Description textarea - Primary input at top */}
+        <div className="mb-5">
+          <label className={cn(
+            "block mb-2 font-semibold",
+            isApple ? "text-[13px] text-[#1D1D1F] tracking-[-0.01em]" : "text-base text-text-primary"
+          )}>
+            {t("controls.description")}
+          </label>
+          <div className="relative">
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder={t("controls.descriptionPlaceholder")}
+              rows={4}
+              className={cn(
+                "w-full resize-none transition-all",
+                isApple
+                  ? cn(
+                      "px-4 py-4 rounded-2xl text-[16px] tracking-[-0.01em]",
+                      "bg-[#F5F5F7] border-2 border-transparent",
+                      "text-[#1D1D1F] placeholder:text-[#86868B]",
+                      "focus:outline-none focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/15"
+                    )
+                  : cn(
+                      "px-4 py-4 rounded-2xl text-base",
+                      "bg-bg-tertiary border-2 border-border",
+                      "text-text-primary placeholder:text-text-tertiary",
+                      "focus:outline-none focus:ring-2 focus:ring-accent-primary/30 focus:border-accent-primary/50"
+                    )
+              )}
+            />
+            {description.length > 0 && description.length < 10 && (
+              <span className={cn(
+                "absolute right-3 bottom-3 text-xs",
+                isApple ? "text-[#86868B]" : "text-text-tertiary"
+              )}>
+                {10 - description.length} more
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className={cn(
+          "border-t mb-4",
+          isApple ? "border-[#E8E8ED]" : "border-border"
+        )} />
+
         {/* Compact form options */}
         <div className={cn("space-y-4", isApple && "space-y-4")}>
           {/* Gender Selection */}
@@ -260,48 +308,13 @@ export function MobilePromptView() {
         </div>
       </div>
 
-      {/* Prompt + Generate - Fixed at bottom */}
+      {/* Generate button - Fixed at bottom */}
       <div className={cn(
-        "sticky bottom-0 left-0 right-0 p-4 pb-6 border-t space-y-3",
+        "sticky bottom-0 left-0 right-0 p-4 pb-6 border-t",
         isApple 
           ? "bg-[#FBFBFD] border-[#E8E8ED]"
           : "bg-bg-primary border-border"
       )}>
-        {/* Description textarea */}
-        <div className="relative">
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder={t("controls.descriptionPlaceholder")}
-            rows={2}
-            className={cn(
-              "w-full resize-none transition-all",
-              isApple
-                ? cn(
-                    "px-4 py-3 rounded-xl text-[15px] tracking-[-0.01em]",
-                    "bg-[#F5F5F7] border border-transparent",
-                    "text-[#1D1D1F] placeholder:text-[#86868B]",
-                    "focus:outline-none focus:border-[#0071E3] focus:ring-4 focus:ring-[#0071E3]/15"
-                  )
-                : cn(
-                    "px-4 py-3 rounded-xl text-base",
-                    "bg-bg-tertiary border border-border",
-                    "text-text-primary placeholder:text-text-tertiary",
-                    "focus:outline-none focus:ring-2 focus:ring-accent-primary/30 focus:border-accent-primary/50"
-                  )
-            )}
-          />
-          {description.length > 0 && description.length < 10 && (
-            <span className={cn(
-              "absolute right-3 bottom-2 text-[10px]",
-              isApple ? "text-[#86868B]" : "text-text-tertiary"
-            )}>
-              {10 - description.length} more
-            </span>
-          )}
-        </div>
-
-        {/* Generate button */}
         <Button
           variant="gradient"
           size="lg"
@@ -329,7 +342,7 @@ export function MobilePromptView() {
 
         {!canGenerate() && description.length >= 10 && (
           <p className={cn(
-            "text-xs text-center",
+            "text-xs text-center mt-2",
             isApple ? "text-[#86868B]" : "text-text-tertiary"
           )}>
             {t("emptyState.selectAll")}
