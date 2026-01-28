@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 import { isAdminAuthenticated } from "@/lib/auth/admin";
-import { calculatePriceAdvanced } from "@/lib/pricing/calculator";
+import { calculatePriceAdvanced, type Stone } from "@/lib/pricing/calculator";
 
 /**
  * Admin Designs API - Fetch all designs with detailed pricing breakdowns
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
               jewelryType: design.jewelryType as "ring" | "necklace" | "bracelet" | "earrings",
               description: design.prompt,
               size: "medium",
-              stones: (design.stones as { type: string; size: string | number; quality?: string; quantity: number }[]) || [],
+              stones: (design.stones as Stone[]) || [],
               complexity: design.complexity as "simple" | "moderate" | "complex" | "master",
               includeAIEstimate: false, // Skip text-based AI estimate to speed things up
               imageUrl: design.thumbnailUrl || undefined, // Use image analysis if available
