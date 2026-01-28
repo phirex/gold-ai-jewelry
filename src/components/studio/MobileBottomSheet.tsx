@@ -274,6 +274,28 @@ export function MobileBottomSheet() {
           <div className="flex-1 overflow-y-auto p-4">
             {activeTab === "controls" ? (
               <div className="space-y-4">
+                {/* Description - Primary input at top */}
+                <div className="space-y-2">
+                  <label className="text-base font-semibold text-text-primary">
+                    {t("controls.description")}
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder={t("controls.descriptionPlaceholder")}
+                    rows={5}
+                    className={cn(
+                      "w-full px-4 py-4 rounded-2xl resize-none text-base",
+                      "bg-bg-tertiary border-2 border-border",
+                      "text-text-primary placeholder:text-text-tertiary",
+                      "focus:outline-none focus:ring-2 focus:ring-accent-primary/30 focus:border-accent-primary/50"
+                    )}
+                  />
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-border" />
+
                 {/* Gender */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-text-secondary">
@@ -341,25 +363,6 @@ export function MobileBottomSheet() {
                       </button>
                     ))}
                   </div>
-                </div>
-
-                {/* Description */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-text-secondary">
-                    {t("controls.description")}
-                  </label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder={t("controls.descriptionPlaceholder")}
-                    rows={3}
-                    className={cn(
-                      "w-full px-4 py-3 rounded-xl resize-none",
-                      "bg-bg-tertiary border border-border",
-                      "text-text-primary placeholder:text-text-tertiary",
-                      "focus:outline-none focus:ring-2 focus:ring-accent-primary/30"
-                    )}
-                  />
                 </div>
 
                 {/* Generate Button */}
