@@ -247,7 +247,56 @@ GOOGLE_CLIENT_SECRET=
 
 # Database
 DATABASE_URL=
+
+# Payment Gateway (Z-Credit)
+ZCREDIT_TERMINAL_NUMBER=  # Terminal number (מספר מסוף)
+ZCREDIT_USERNAME=         # Terminal password (סיסמת מסוף)
+ZCREDIT_API_KEY=          # API key for backend operations (refunds, queries)
 ```
+
+## Payment Integration (Z-Credit)
+
+The platform uses Z-Credit, an Israeli payment gateway, for processing credit card payments.
+
+### Credentials:
+| Credential | Env Variable | Purpose |
+|------------|--------------|---------|
+| Terminal Number (מספר מסוף) | `ZCREDIT_TERMINAL_NUMBER` | Merchant terminal identifier |
+| Terminal Password (סיסמת מסוף) | `ZCREDIT_USERNAME` | Authentication for payment requests |
+| API Key | `ZCREDIT_API_KEY` | Backend operations (refunds, queries) |
+
+### Integration Flow:
+1. **Checkout page** collects shipping info and payment method selection
+2. **`POST /api/payments/zcredit/create`** creates an order and gets a payment URL
+3. User is **redirected to Z-Credit's secure payment page**
+4. After payment, user is redirected back to `/checkout/complete?orderId=xxx`
+5. **`POST /api/payments/zcredit/webhook`** receives payment notifications from Z-Credit
+
+### Webhook Configuration:
+The webhook URL must be configured in your Z-Credit merchant portal:
+- **Notify URL**: `https://your-domain.com/api/payments/zcredit/webhook`
+
+### Supported Features:
+- Single payment (תשלום רגיל)
+- Installments (תשלומים) - up to 12 payments
+- Multiple currencies (ILS, USD)
+- Full-page redirect payment flow
+- Responsive payment page
+- Refunds (via admin API with API key)
+
+### API Key Usage:
+The API key is used for backend-only operations (not the payment flow):
+- `getTransactionDetails(guid)` - Verify payment status
+- `refundTransaction(guid, amount?)` - Process full or partial refunds
+- Admin endpoint: `POST /api/admin/orders/[orderId]/refund`
+
+### Related Files:
+- `src/lib/payments/zcredit.ts` - Z-Credit client library
+- `src/app/api/payments/zcredit/create/route.ts` - Create payment endpoint
+- `src/app/api/payments/zcredit/webhook/route.ts` - Webhook handler
+- `src/app/api/admin/orders/[orderId]/refund/route.ts` - Admin refund endpoint
+- `src/app/[locale]/checkout/page.tsx` - Checkout page
+- `src/app/[locale]/checkout/complete/page.tsx` - Order completion page
 
 ## Common Tasks
 

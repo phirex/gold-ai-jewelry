@@ -92,28 +92,35 @@ model Design {
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  userId          String
-  user            User        @relation(fields: [userId], references: [id])
-  orderNumber     String      @unique
-  items           OrderItem[]
-  subtotal        Float
-  shipping        Float       @default(0)
-  tax             Float       @default(0)
-  total           Float
-  currency        String      @default("ILS")
-  status          String      @default("pending") // pending, paid, manufacturing, shipped, delivered, cancelled, refunded
-  shippingAddress Json
-  billingAddress  Json?
-  paymentMethod   String?     // tranzila, meshulam
-  paymentRef      String?     // Payment gateway reference
-  notes           String?     @db.Text
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id               String      @id @default(cuid())
+  userId           String?
+  user             User?       @relation(fields: [userId], references: [id])
+  orderNumber      String      @unique @default(cuid())
+  items            OrderItem[]
+  itemsJson        Json?       // Cart items as JSON for guest orders
+  subtotal         Float
+  shipping         Float       @default(0)
+  tax              Float       @default(0)
+  total            Float
+  currency         String      @default("ILS")
+  status           String      @default("pending") // pending, paid, manufacturing, shipped, delivered, cancelled, refunded, failed
+  shippingAddress  Json?
+  billingAddress   Json?
+  customerName     String?
+  customerEmail    String?
+  customerPhone    String?
+  paymentGateway   String?     // zcredit, tranzila, meshulam
+  paymentReference String?     // Payment gateway transaction GUID
+  paymentApproval  String?     // Payment approval number
+  paymentDetails   Json?       // Additional payment info (card last 4, brand, etc.)
+  notes            String?     @db.Text
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
   @@index([userId])
   @@index([status])
   @@index([orderNumber])
+  @@index([customerEmail])
 }
 
 model OrderItem {

@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
               jewelryType: design.jewelryType as "ring" | "necklace" | "bracelet" | "earrings",
               description: design.prompt,
               size: "medium",
-              stones: (design.stones as Stone[]) || [],
+              stones: (design.stones as unknown as Stone[]) || [],
               complexity: design.complexity as "simple" | "moderate" | "complex" | "master",
               includeAIEstimate: false, // Skip text-based AI estimate to speed things up
               imageUrl: design.thumbnailUrl || undefined, // Use image analysis if available

@@ -52,14 +52,49 @@ export default function CheckoutPage() {
     e.preventDefault();
     setIsProcessing(true);
 
-    // TODO: Integrate with Tranzila payment gateway
-    // For now, simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // Get selected payment method
+      const paymentMethodInput = document.querySelector('input[name="paymentMethod"]:checked') as HTMLInputElement;
+      const paymentMethod = paymentMethodInput?.value || 'card';
+      const installments = paymentMethod === 'installments' ? 3 : 1;
 
-    // On success, clear cart and show confirmation
-    clearCart();
-    setStep("confirmation");
-    setIsProcessing(false);
+      // Create payment with Z-Credit
+      const response = await fetch('/api/payments/zcredit/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          items: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            thumbnailUrl: item.thumbnailUrl,
+            price: item.price,
+            quantity: item.quantity,
+            jewelryType: item.jewelryType,
+            material: item.material,
+          })),
+          shippingInfo: shippingForm,
+          locale,
+          installments,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.paymentUrl) {
+        // Redirect to Z-Credit payment page
+        window.location.href = data.paymentUrl;
+      } else {
+        // Show error
+        alert(data.error || t("paymentError"));
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert(t("paymentError"));
+      setIsProcessing(false);
+    }
   };
 
   if (items.length === 0 && step !== "confirmation") {
@@ -325,14 +360,30 @@ export default function CheckoutPage() {
                   </label>
                 </div>
 
-                {/* Card Details (Placeholder - will be replaced with Tranzila iframe) */}
+                {/* Z-Credit Payment Info */}
                 <div className="p-6 bg-dark-850 rounded-lg mb-6 border border-dark-700">
-                  <p className="text-center text-dark-400">
-                    {t("paymentProvider")}
+                  <div className="flex items-center justify-center gap-3 mb-3">
+                    <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" strokeWidth="1.5" className="text-gold-400"/>
+                      <path d="M2 10H22" stroke="currentColor" strokeWidth="1.5" className="text-gold-400"/>
+                      <path d="M6 15H10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="text-gold-400"/>
+                    </svg>
+                    <span className="text-dark-200 font-medium">{t("securePayment")}</span>
+                  </div>
+                  <p className="text-center text-dark-400 text-sm">
+                    {t("redirectToPayment")}
                   </p>
-                  <p className="text-center text-sm text-dark-500 mt-2">
-                    {t("paymentSecure")}
-                  </p>
+                  <div className="flex items-center justify-center gap-2 mt-4">
+                    <div className="flex items-center gap-1 px-2 py-1 bg-dark-800 rounded text-xs text-dark-400">
+                      <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                      </svg>
+                      SSL
+                    </div>
+                    <div className="flex items-center gap-1 px-2 py-1 bg-dark-800 rounded text-xs text-dark-400">
+                      PCI DSS
+                    </div>
+                  </div>
                 </div>
 
                 <button

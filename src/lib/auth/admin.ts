@@ -6,6 +6,8 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/config";
 
 export type UserRole = "user" | "admin" | "crafter";
 

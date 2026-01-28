@@ -94,41 +94,46 @@ export class NanoBananaClient {
 
   /**
    * Build a professional jewelry product photography prompt
+   * IMPORTANT: Focuses on accuracy, no unwanted elements, and clean output
    */
   buildJewelryPrompt(userPrompt: string, context?: JewelryImageContext): string {
     const parts: string[] = [];
 
-    // 1. Product photography framing
-    parts.push("Professional luxury jewelry product photography");
-    parts.push("single isolated jewelry piece centered on pure white seamless background");
-    parts.push("NO people, NO hands, NO fingers, NO models, NO mannequins, NO skin");
+    // 1. CRITICAL: Prohibit unwanted elements FIRST (most important)
+    parts.push("STRICT RULES: NO text, NO engravings, NO inscriptions, NO writing, NO letters, NO words, NO symbols engraved on the jewelry");
+    parts.push("NO people, NO hands, NO fingers, NO models, NO mannequins, NO skin, NO body parts");
+    parts.push("NO duplicate items, NO extra pieces, NO background objects, NO secondary jewelry");
 
-    // 2. Jewelry type with detailed descriptions
+    // 2. Product photography framing
+    parts.push("Professional luxury jewelry product photography");
+    parts.push("EXACTLY ONE single isolated jewelry piece centered on pure white seamless background");
+
+    // 3. Jewelry type with PRECISE, RESTRICTIVE descriptions
     if (context?.jewelryType) {
       const jewelryDescriptions: Record<string, string> = {
-        ring: "a single elegant finger ring with clearly defined circular band, photographed from 3/4 elevated angle showing the band thickness and any setting details, the ring appears to float on reflective white surface with soft shadow beneath",
-        necklace: "a beautiful pendant necklace with delicate chain links visible, laid in gentle S-curve shape showing the full chain length and pendant centerpiece, displayed flat on white surface",
-        bracelet: "a wrist bracelet arranged in natural oval loop shape as if worn, showing clasp detail and link construction, displayed on white surface with subtle reflection",
-        earrings: "a matching pair of earrings arranged symmetrically side by side, showing post or hook details, displayed on white surface with slight separation between them",
+        ring: "ONLY ONE elegant finger ring with clearly defined circular band, photographed from 3/4 elevated angle showing the band thickness and any setting details, the ring floats on reflective white surface with soft shadow beneath, clean smooth metal surface without any engravings",
+        necklace: "EXACTLY ONE pendant necklace with ONLY ONE delicate chain, the SINGLE chain arranged in gentle curve with ONE pendant centerpiece at the bottom, displayed flat on white surface, NO extra chains or necklaces in background, clean unadorned pendant surface",
+        bracelet: "ONLY ONE wrist bracelet arranged in natural oval loop shape, showing clasp detail and link construction, displayed on white surface with subtle reflection, smooth metal without engravings",
+        earrings: "EXACTLY ONE matching pair of earrings (TWO earrings only) arranged symmetrically side by side, showing post or hook details, displayed on white surface with slight separation between them, clean surfaces without text",
       };
       parts.push(jewelryDescriptions[context.jewelryType]);
     }
 
-    // 3. Material with detailed metal rendering
+    // 4. Material with detailed metal rendering
     if (context?.material) {
       const materialDescriptions: Record<string, string> = {
-        gold_14k: "crafted in polished 14K yellow gold with warm honey-toned lustrous finish, realistic metal reflections showing depth and dimension, subtle gold shimmer",
-        gold_18k: "made of gleaming 18K yellow gold with rich deep golden color and mirror-like polish, light reflections dancing across the surface, luxurious warm glow",
-        gold_24k: "pure 24K gold with deep saturated warm yellow tone, soft buttery glow, highest karat gold appearance with rich color saturation",
-        silver: "sterling silver 925 with bright mirror-polished surface, cool metallic sheen, crisp light reflections, contemporary silver finish",
-        platinum: "platinum with sophisticated satin brushed finish, subtle grey-white metallic luster, premium precious metal appearance",
-        white_gold: "white gold with rhodium plating giving bright silvery finish, mirror polish with cool undertones",
-        rose_gold: "rose gold with romantic warm pink undertones, polished copper-gold blend, soft rosy metallic glow",
+        gold_14k: "crafted in polished 14K yellow gold with warm honey-toned lustrous finish, realistic metal reflections showing depth and dimension, subtle gold shimmer, smooth unblemished surface",
+        gold_18k: "made of gleaming 18K yellow gold with rich deep golden color and mirror-like polish, light reflections dancing across the surface, luxurious warm glow, pristine smooth finish",
+        gold_24k: "pure 24K gold with deep saturated warm yellow tone, soft buttery glow, highest karat gold appearance with rich color saturation, flawless polished surface",
+        silver: "sterling silver 925 with bright mirror-polished surface, cool metallic sheen, crisp light reflections, contemporary silver finish, clean unmarked surface",
+        platinum: "platinum with sophisticated satin brushed finish, subtle grey-white metallic luster, premium precious metal appearance, pristine surface",
+        white_gold: "white gold with rhodium plating giving bright silvery finish, mirror polish with cool undertones, smooth clean surface",
+        rose_gold: "rose gold with romantic warm pink undertones, polished copper-gold blend, soft rosy metallic glow, unblemished finish",
       };
-      parts.push(materialDescriptions[context.material] || "precious metal with polished finish");
+      parts.push(materialDescriptions[context.material] || "precious metal with polished smooth finish");
     }
 
-    // 4. User's specific design description (cleaned of gender references)
+    // 5. User's specific design description (cleaned of gender references)
     const cleanedPrompt = userPrompt
       .replace(/\bfor (a )?(woman|women|man|men|female|male)\b/gi, "")
       .replace(/\b(woman|women|man|men|female|male)('s)?\b/gi, "")
@@ -139,7 +144,7 @@ export class NanoBananaClient {
       parts.push(cleanedPrompt);
     }
 
-    // 5. Style influences
+    // 6. Style influences
     if (context?.style) {
       const styleDescriptions: Record<string, string> = {
         classic: "timeless elegant design with refined proportions and traditional craftsmanship",
@@ -151,11 +156,14 @@ export class NanoBananaClient {
       parts.push(styleDescriptions[context.style]);
     }
 
-    // 6. Professional photography details
+    // 7. Professional photography details
     parts.push("shot with macro lens at f/11 for maximum sharpness and depth of field");
     parts.push("professional three-point studio lighting setup with soft diffused key light");
     parts.push("subtle gradient shadow beneath jewelry for depth");
     parts.push("8K ultra high resolution, photorealistic rendering, advertising quality");
+    
+    // 8. Final reminder - no text/engravings
+    parts.push("remember: absolutely no text or engravings on the jewelry unless specifically requested");
 
     return parts.join(", ");
   }

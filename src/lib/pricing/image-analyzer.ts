@@ -136,7 +136,7 @@ Respond ONLY with valid JSON in this exact format:
 /**
  * Download image and convert to base64
  */
-async function imageUrlToBase64(imageUrl: string): Promise<{ data: string; mediaType: string }> {
+async function imageUrlToBase64(imageUrl: string): Promise<{ data: string; mediaType: "image/jpeg" | "image/png" | "image/gif" | "image/webp" }> {
   const response = await fetch(imageUrl);
   if (!response.ok) {
     throw new Error(`Failed to fetch image: ${response.status}`);

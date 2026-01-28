@@ -265,14 +265,14 @@ export class TripoClient {
     // 2. Main Subject - Clear jewelry type definition with specific shapes
     if (context?.jewelryType) {
       const jewelryTypes: Record<string, string> = {
-        ring: "a real gold finger ring with circular band shape",
-        necklace: "a real gold pendant necklace with delicate chain",
-        bracelet: "a real gold wrist bracelet with linked segments",
-        earrings: "a pair of real gold earrings",
+        ring: "ONLY ONE real gold finger ring with circular band shape, smooth clean surface without engravings",
+        necklace: "EXACTLY ONE real gold pendant necklace with SINGLE delicate chain, clean unadorned surfaces",
+        bracelet: "ONLY ONE real gold wrist bracelet with linked segments, smooth polished surfaces",
+        earrings: "EXACTLY ONE pair of real gold earrings, clean surfaces without text or engravings",
       };
       parts.push(jewelryTypes[context.jewelryType]);
     } else {
-      parts.push("a piece of real fine jewelry");
+      parts.push("a piece of real fine jewelry with smooth clean surfaces");
     }
 
     // 3. User's design description
@@ -281,13 +281,13 @@ export class TripoClient {
     // 4. Material with VERY specific realistic properties
     if (context?.material) {
       const materialDescriptions: Record<string, string> = {
-        gold_14k: "14K yellow gold with mirror-like polished surface, realistic gold color #FFD700, subtle warm reflections",
-        gold_18k: "18K yellow gold with high-gloss polished finish, rich golden tone, professional jewelry grade metal",
-        gold_24k: "24K pure gold with brilliant lustrous finish, deep warm yellow color, soft metallic glow",
-        silver: "sterling silver 925 with bright polished surface, cool metallic reflections, professional jewelry finish",
-        platinum: "platinum with satin brushed finish, white metallic luster, luxury jewelry grade",
+        gold_14k: "14K yellow gold with mirror-like polished surface, realistic gold color #FFD700, subtle warm reflections, pristine unblemished finish",
+        gold_18k: "18K yellow gold with high-gloss polished finish, rich golden tone, professional jewelry grade metal, smooth clean surface",
+        gold_24k: "24K pure gold with brilliant lustrous finish, deep warm yellow color, soft metallic glow, flawless surface",
+        silver: "sterling silver 925 with bright polished surface, cool metallic reflections, professional jewelry finish, unmarked clean surface",
+        platinum: "platinum with satin brushed finish, white metallic luster, luxury jewelry grade, pristine surface",
       };
-      parts.push(materialDescriptions[context.material] || "precious metal with polished surface");
+      parts.push(materialDescriptions[context.material] || "precious metal with polished smooth surface");
     }
 
     // 5. Realism emphasis - critical for good results
@@ -299,7 +299,8 @@ export class TripoClient {
       "clean white background",
       "8K resolution detail",
       "physically accurate metal reflections",
-      "no stylization"
+      "no stylization",
+      "no text or engravings on the jewelry"
     );
 
     return parts.join(", ");
@@ -312,6 +313,11 @@ export class TripoClient {
   private buildNegativePrompt(context?: JewelryContext): string {
     // Core negatives - focus on avoiding stylization and getting realistic output
     const negatives: string[] = [
+      "text",
+      "engraving",
+      "inscription",
+      "writing",
+      "letters",
       "cartoon",
       "stylized",
       "low poly",
@@ -323,11 +329,16 @@ export class TripoClient {
       "rough texture",
       "CGI look",
       "unrealistic",
+      "duplicate",
+      "extra items",
     ];
 
     // Add type-specific negatives
     if (context?.jewelryType === "ring") {
       negatives.push("open ring", "broken band");
+    }
+    if (context?.jewelryType === "necklace") {
+      negatives.push("multiple chains", "extra necklaces");
     }
 
     return negatives.join(", ");
