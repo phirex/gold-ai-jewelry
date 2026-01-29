@@ -4,9 +4,41 @@ import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useCart } from "@/contexts/CartContext";
 import { formatPrice } from "@/lib/pricing/calculator";
-import { ShoppingBag, CreditCard, Truck, ChevronLeft, Check, Sparkles, X, ZoomIn } from "lucide-react";
+import { ShoppingBag, CreditCard, Truck, ChevronLeft, Check, Sparkles, X, ZoomIn, FlaskConical } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+
+// Test product button component for testing checkout flow
+function TestProductButton() {
+  const { addItem, setCartOpen } = useCart();
+  const [added, setAdded] = useState(false);
+
+  const addTestProduct = () => {
+    addItem({
+      designId: "test-product-001",
+      name: "Test Product (DELETE AFTER TESTING)",
+      thumbnailUrl: undefined,
+      modelUrl: undefined,
+      jewelryType: "ring",
+      material: "test",
+      size: "7",
+      price: 10, // 10 NIS
+    });
+    setAdded(true);
+    setCartOpen(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
+  return (
+    <button
+      onClick={addTestProduct}
+      className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-all"
+    >
+      <FlaskConical className="w-4 h-4" />
+      {added ? "Added!" : "Add Test Product (₪10)"}
+    </button>
+  );
+}
 
 interface ShippingForm {
   name: string;
@@ -111,13 +143,17 @@ export default function CheckoutPage() {
           <p className="text-dark-400 mb-8">
             {tCart("emptySubtitle")}
           </p>
-          <Link
-            href={`/${locale}/design`}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-400 text-dark-900 font-semibold rounded-xl transition-all shadow-lg shadow-gold-500/25 hover:shadow-gold-400/40 hover:shadow-xl"
-          >
-            <Sparkles className="w-5 h-5" />
-            {tCart("startDesigning")}
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href={`/${locale}/design`}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-400 text-dark-900 font-semibold rounded-xl transition-all shadow-lg shadow-gold-500/25 hover:shadow-gold-400/40 hover:shadow-xl"
+            >
+              <Sparkles className="w-5 h-5" />
+              {tCart("startDesigning")}
+            </Link>
+            {/* Test button - remove after testing */}
+            <TestProductButton />
+          </div>
         </div>
       </div>
     );
@@ -160,7 +196,11 @@ export default function CheckoutPage() {
             <ChevronLeft className="w-5 h-5" />
             {tCart("continueShopping")}
           </Link>
-          <h1 className="text-3xl font-bold text-gradient-gold-bright">{t("title")}</h1>
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <h1 className="text-3xl font-bold text-gradient-gold-bright">{t("title")}</h1>
+            {/* Test button - remove after testing */}
+            <TestProductButton />
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
