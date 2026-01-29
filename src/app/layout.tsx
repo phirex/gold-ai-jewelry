@@ -14,6 +14,11 @@ export const metadata: Metadata = {
     "necklaces",
     "Israel",
   ],
+  icons: {
+    icon: "/gold-ai-logo.png",
+    shortcut: "/gold-ai-logo.png",
+    apple: "/gold-ai-logo.png",
+  },
 };
 
 export default function RootLayout({

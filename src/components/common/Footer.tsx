@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { Gem, Facebook, Instagram, Twitter, Sparkles, Heart } from "lucide-react";
+import { Facebook, Instagram, Twitter, Heart } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
 interface FooterProps {
@@ -58,10 +59,14 @@ export function Footer({ className }: FooterProps) {
               href={`/${locale}`}
               className="inline-flex items-center gap-2.5 font-bold text-xl mb-6 group"
             >
-              <div className="relative">
-                <div className="absolute inset-0 bg-accent-primary/20 rounded-full blur-md group-hover:bg-accent-primary/30 transition-all" />
-                <Gem className="relative h-7 w-7 text-accent-primary group-hover:scale-110 transition-transform" />
-                <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-accent-tertiary animate-pulse" />
+              <div className="relative group-hover:scale-105 transition-transform">
+                <Image
+                  src="/gold-ai-logo.png"
+                  alt={tCommon("appName")}
+                  width={36}
+                  height={36}
+                  className="object-contain"
+                />
               </div>
               <span className="font-display text-2xl text-text-primary">
                 {tCommon("appName")}

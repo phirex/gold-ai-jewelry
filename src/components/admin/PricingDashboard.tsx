@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import Image from "next/image";
 import { LiveCalculator } from "./LiveCalculator";
 import { PricingPipeline } from "./PricingPipeline";
 import { MarketDataCard } from "./MarketDataCard";
@@ -105,22 +106,14 @@ export function PricingDashboard({ locale, user }: PricingDashboardProps) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px' }}>
             {/* Logo & Title */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem' }}>
-              <div style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '10px',
-                background: 'linear-gradient(135deg, var(--admin-gold) 0%, var(--admin-gold-light) 100%)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: 'var(--admin-shadow-gold)',
-              }}>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M6 3h12l4 6-10 13L2 9z"/>
-                  <path d="M11 3l1 6 1-6"/>
-                  <path d="M2 9h20"/>
-                </svg>
-              </div>
+              <Image
+                src="/gold-ai-logo.png"
+                alt="Gold AI"
+                width={40}
+                height={40}
+                style={{ borderRadius: '10px', objectFit: 'contain' }}
+                priority
+              />
               <div>
                 <h1 className="admin-heading" style={{ fontSize: '1.25rem', marginBottom: '0.125rem' }}>
                   Admin Dashboard

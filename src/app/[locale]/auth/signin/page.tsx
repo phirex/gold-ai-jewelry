@@ -3,8 +3,8 @@
 import { signIn } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { Gem, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export default function SignInPage() {
@@ -35,10 +35,15 @@ export default function SignInPage() {
           href="/"
           className="flex items-center justify-center gap-2.5 font-bold text-2xl mb-8 animate-fade-in-down group"
         >
-          <div className="relative">
-            <div className="absolute inset-0 bg-gold-400/30 rounded-full blur-md group-hover:bg-gold-400/40 transition-all" />
-            <Gem className="relative h-8 w-8 text-gold-400 transition-transform group-hover:scale-110" />
-            <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-gold-300 animate-pulse" />
+          <div className="relative group-hover:scale-105 transition-transform">
+            <Image
+              src="/gold-ai-logo.png"
+              alt={tCommon("appName")}
+              width={48}
+              height={48}
+              className="object-contain"
+              priority
+            />
           </div>
           <span className="text-gradient-gold-bright">{tCommon("appName")}</span>
         </Link>

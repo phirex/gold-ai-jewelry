@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
-import { Menu, X, User, Gem, Sparkles } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { CartButton } from "@/components/cart/CartButton";
@@ -52,30 +53,24 @@ export function Header({ className }: HeaderProps) {
               isApple ? "gap-2" : "gap-2.5"
             )}
           >
-            {isApple ? (
-              // Modern logo with gold sparkle accent
-              <>
-                <div className="relative">
-                  <Gem className="h-6 w-6 text-[#1D1D1F] group-hover:scale-105 transition-transform" />
-                  <Sparkles className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 text-[#D4A574] animate-pulse" />
-                </div>
-                <span className="hidden sm:inline text-[17px] font-semibold text-[#1D1D1F] tracking-[-0.02em]">
-                  {tCommon("appName")}
-                </span>
-              </>
-            ) : (
-              // Classic gold decorative logo
-              <>
-                <div className="relative">
-                  <div className="absolute inset-0 bg-accent-primary/20 rounded-full blur-md group-hover:bg-accent-primary/30 transition-all" />
-                  <Gem className="relative h-7 w-7 text-accent-primary group-hover:scale-110 transition-transform" />
-                  <Sparkles className="absolute -top-1 -right-1 h-3 w-3 text-accent-tertiary animate-pulse" />
-                </div>
-                <span className="hidden sm:inline font-display text-2xl text-text-primary">
-                  {tCommon("appName")}
-                </span>
-              </>
-            )}
+            <div className="relative group-hover:scale-105 transition-transform">
+              <Image
+                src="/gold-ai-logo.png"
+                alt={tCommon("appName")}
+                width={isApple ? 32 : 40}
+                height={isApple ? 32 : 40}
+                className="object-contain"
+                priority
+              />
+            </div>
+            <span className={cn(
+              "hidden sm:inline",
+              isApple 
+                ? "text-[17px] font-semibold text-[#1D1D1F] tracking-[-0.02em]"
+                : "font-display text-2xl text-text-primary"
+            )}>
+              {tCommon("appName")}
+            </span>
           </Link>
 
           {/* Desktop Navigation */}

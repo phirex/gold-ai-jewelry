@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import {
   Sparkles,
@@ -12,7 +13,6 @@ import {
   Palette,
   Truck,
   ArrowRight,
-  Gem,
   Star,
   Play,
   Shield,
@@ -216,7 +216,13 @@ export default function AboutPage() {
               <div className="text-center lg:text-left rtl:lg:text-right">
                 {/* Badge */}
                 <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full glass-card mb-8 animate-fade-in-down">
-                  <Gem className="h-5 w-5 text-accent-primary" />
+                  <Image
+                    src="/gold-ai-logo.png"
+                    alt={tCommon("appName")}
+                    width={24}
+                    height={24}
+                    className="object-contain"
+                  />
                   <span className="text-text-secondary font-medium tracking-wide">
                     {tCommon("appName")}
                   </span>
