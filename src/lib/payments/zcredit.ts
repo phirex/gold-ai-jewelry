@@ -104,6 +104,10 @@ export class ZCreditClient {
     try {
       const cartItemsJSON = request.cartItems ? JSON.stringify(request.cartItems) : "[]";
 
+      // Helper to convert boolean to "0" or "1" for Z-Credit API
+      const boolToNum = (val: boolean | undefined, defaultVal: boolean = false): string => 
+        (val ?? defaultVal) ? "1" : "0";
+
       const params = new URLSearchParams({
         TerminalNumber: this.terminalNumber,
         Username: this.username,
@@ -118,14 +122,14 @@ export class ZCreditClient {
         RedirectLink: encodeURIComponent(request.redirectUrl),
         NotifyLink: encodeURIComponent(request.notifyUrl),
         CancelLink: encodeURIComponent(request.cancelUrl),
-        UsePaymentsRange: (request.usePaymentsRange ?? false).toString(),
-        ShowHolderID: (request.showHolderId ?? false).toString(),
-        AuthorizeOnly: (request.authorizeOnly ?? false).toString(),
-        HideCustomer: (request.hideCustomer ?? false).toString(),
+        UsePaymentsRange: boolToNum(request.usePaymentsRange, false),
+        ShowHolderID: boolToNum(request.showHolderId, false),
+        AuthorizeOnly: boolToNum(request.authorizeOnly, false),
+        HideCustomer: boolToNum(request.hideCustomer, false),
         CssType: (request.cssType ?? 1).toString(),
-        IsCssResponsive: (request.isResponsive ?? true).toString(),
+        IsCssResponsive: boolToNum(request.isResponsive, true),
         NumberOfFailures: (request.numberOfFailures ?? 3).toString(),
-        IsIFrame: (request.isIframe ?? false).toString(),
+        IsIFrame: boolToNum(request.isIframe, false),
         CartItems: cartItemsJSON,
       });
 
