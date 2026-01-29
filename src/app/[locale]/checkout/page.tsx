@@ -69,10 +69,13 @@ export default function CheckoutPage() {
     country: "Israel",
   });
 
-  // Calculate totals
-  const shippingCost = subtotal > 500 ? 0 : 35; // Free shipping over 500 ILS
+  // Check if cart only contains test products
+  const isTestOrder = items.every(item => item.designId.startsWith("test-product"));
+  
+  // Calculate totals (no shipping/tax for test orders)
+  const shippingCost = isTestOrder ? 0 : (subtotal > 500 ? 0 : 35); // Free shipping over 500 ILS
   const taxRate = 0.17; // 17% VAT in Israel
-  const tax = (subtotal + shippingCost) * taxRate;
+  const tax = isTestOrder ? 0 : (subtotal + shippingCost) * taxRate;
   const total = subtotal + shippingCost + tax;
 
   const handleShippingSubmit = (e: React.FormEvent) => {

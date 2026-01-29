@@ -55,11 +55,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate totals
+    // Check if cart only contains test products
+    const isTestOrder = items.every(item => item.id.startsWith("test-product"));
+    
+    // Calculate totals (no shipping/tax for test orders)
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const shippingCost = subtotal > 500 ? 0 : 35; // Free shipping over 500 ILS
+    const shippingCost = isTestOrder ? 0 : (subtotal > 500 ? 0 : 35); // Free shipping over 500 ILS
     const taxRate = 0.17; // 17% VAT
-    const tax = (subtotal + shippingCost) * taxRate;
+    const tax = isTestOrder ? 0 : (subtotal + shippingCost) * taxRate;
     const total = Math.round((subtotal + shippingCost + tax) * 100) / 100; // Round to 2 decimals
 
     // Create order in database
