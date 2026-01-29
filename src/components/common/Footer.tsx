@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Gem, Facebook, Instagram, Twitter, Sparkles, Heart } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -12,18 +12,19 @@ interface FooterProps {
 export function Footer({ className }: FooterProps) {
   const t = useTranslations("footer");
   const tCommon = useTranslations("common");
+  const locale = useLocale();
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     company: [
-      { href: "/about", label: t("about") },
-      { href: "/contact", label: t("contact") },
-      { href: "/faq", label: t("faq") },
+      { href: `/${locale}/about`, label: t("about") },
+      { href: `/${locale}/contact`, label: t("contact") },
+      { href: `/${locale}/faq`, label: t("faq") },
     ],
     legal: [
-      { href: "/terms", label: t("terms") },
-      { href: "/privacy", label: t("privacy") },
-      { href: "/shipping", label: t("shipping") },
+      { href: `/${locale}/terms`, label: t("terms") },
+      { href: `/${locale}/privacy`, label: t("privacy") },
+      { href: `/${locale}/shipping`, label: t("shipping") },
     ],
   };
 
@@ -54,7 +55,7 @@ export function Footer({ className }: FooterProps) {
           {/* Brand */}
           <div className="md:col-span-2">
             <Link
-              href="/"
+              href={`/${locale}`}
               className="inline-flex items-center gap-2.5 font-bold text-xl mb-6 group"
             >
               <div className="relative">

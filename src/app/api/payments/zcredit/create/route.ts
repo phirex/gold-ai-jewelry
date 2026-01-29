@@ -86,7 +86,8 @@ export async function POST(request: NextRequest) {
     });
 
     // Get the base URL for callbacks
-    const baseUrl = process.env.NEXTAUTH_URL || request.nextUrl.origin;
+    // Use the request origin for production compatibility (don't rely on NEXTAUTH_URL which may be localhost)
+    const baseUrl = request.nextUrl.origin;
 
     // Create Z-Credit payment
     const zcreditClient = getZCreditClient();
